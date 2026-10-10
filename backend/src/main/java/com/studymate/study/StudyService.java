@@ -101,6 +101,25 @@ public class StudyService {
         studyMemberRepository.delete(studyMember);
     }
 
+    @Transactional
+    public void deleteStudy(Integer studyId) {
+
+        Study study = studyRepository.findById(studyId)
+                .orElseThrow(() -> new BusinessException(
+                        HttpStatus.NOT_FOUND,
+                        "스터디를 찾을 수 없습니다."
+                ));
+
+        List<StudyMember> studyMembers = studyMemberRepository.findAllByStudyId(studyId);
+
+        for (StudyMember studyMember : studyMembers) {
+            studyMemberGoalRepository.deleteAllByStudyMemberId(studyMember.getId());
+        }
+
+        studyMemberRepository.deleteAll(studyMembers);
+        studyRepository.delete(study);
+    }
+
     public StudyListResponse getStudies(Integer userId, Category category) {
 
         List<Study> studies;

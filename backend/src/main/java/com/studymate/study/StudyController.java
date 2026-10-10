@@ -43,6 +43,14 @@ public class StudyController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/{studyId}")
+    public ResponseEntity<Void> deleteStudy(@PathVariable Integer studyId) {
+
+        studyService.deleteStudy(studyId);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping
     public ResponseEntity<StudyListResponse> getStudies(@RequestParam(required = false) Category category, Authentication authentication) {
 

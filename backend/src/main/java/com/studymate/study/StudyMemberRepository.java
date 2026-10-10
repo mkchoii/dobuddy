@@ -25,4 +25,5 @@ public interface StudyMemberRepository extends JpaRepository<StudyMember, Intege
             Integer StudyId,
             Integer UserId
     );
+    void deleteAllByStudyId(Integer studyId);
 }
