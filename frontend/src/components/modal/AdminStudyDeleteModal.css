@@ -1,0 +1,69 @@
+.study-delete-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1100;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.12);
+}
+
+.study-delete-modal {
+    position: relative;
+    width: 381px;
+    max-width: calc(100vw - 32px);
+    height: 152px;
+
+    background: #fff;
+    border-radius: 20px;
+    box-sizing: border-box;
+}
+
+.study-delete-message {
+    position: absolute;
+    top: 40px;
+    left: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 100%;
+
+    font-size: 16px;
+    line-height: 19px;
+    text-align: center;
+    color: #000;
+}
+
+.study-delete-message strong {
+    font-weight: 600;
+}
+
+.study-delete-buttons {
+    position: absolute;
+    bottom: 26px;
+    left: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+
+    width: 100%;
+}
+
+.study-delete-buttons .small-button {
+    width: 71px;
+    height: 26px;
+    padding: 0;
+
+    background: #393433;
+    border-radius: 12px;
+
+    font-size: 11px;
+    font-weight: 400;
+    color: #fff;
+}

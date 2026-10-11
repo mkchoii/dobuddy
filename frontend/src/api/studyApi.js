@@ -217,3 +217,16 @@ export async function createStudy(studyName, category, maxMembers) {
 
     return response.json();
 }
+
+export async function deleteStudy(studyId) {
+    const response = await fetch(`${API_BASE_URL}/studies/${studyId}`,
+        {
+            method: 'DELETE',
+            credentials: 'include'
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error('스터디 삭제에 실패했습니다.');
+    }
+}

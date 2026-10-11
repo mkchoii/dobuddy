@@ -1,8 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { getStudyDashboard, updateStudy, getStudyMemberDetail, deleteStudyMember
+import { 
+    getStudyDashboard, 
+    updateStudy, 
+    getStudyMemberDetail, 
+    deleteStudyMember,
+    deleteStudy
  } from '../api/studyApi';
+
 import { CATEGORIES } from '../categories';
 
 import AdminHeader from '../components/layout/AdminHeader';
@@ -11,8 +17,10 @@ import StudyMemberRow from '../components/study/StudyMemberRow';
 import vectorLeftIcon from '../assets/icons/vector-left.svg';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
+import SmallButton from '../components/common/SmallButton';
 import StudyMemberDetailModal from '../components/modal/StudyMemberDetailModal';
 import StudyMemberDeleteModal from '../components/modal/StudyMemberDeleteModal';
+import AdminStudyDeleteModal from '../components/modal/AdminStudyDeleteModal';
 
 import './AdminStudyManagePage.css';
 
@@ -37,6 +45,9 @@ function AdminStudyManagePage() {
 
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
+
+    const [isStudyDeleteModalOpen, setIsStudyDeleteModalOpen] = useState(false);
+    const [isStudyDeleting, setIsStudyDeleting] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
@@ -131,39 +142,53 @@ function AdminStudyManagePage() {
     };
 
     // 강퇴하기 버튼 클릭 → 강퇴 확인 팝업 표시
-const handleOpenDeleteModal = (member) => {
-    setSelectedMember(null);
-    setDeleteTarget(member);
-};
+    const handleOpenDeleteModal = (member) => {
+        setSelectedMember(null);
+        setDeleteTarget(member);
+    };
 
-// 강퇴 확인 버튼 클릭 → DELETE API 호출
-const handleDeleteMember = async () => {
-    if (!deleteTarget || isDeleting) return;
+    // 강퇴 확인 버튼 클릭 → DELETE API 호출
+    const handleDeleteMember = async () => {
+        if (!deleteTarget || isDeleting) return;
 
-    try {
-        setIsDeleting(true);
+        try {
+            setIsDeleting(true);
 
-        await deleteStudyMember(
-            studyId,
-            deleteTarget.studyMemberId
-        );
+            await deleteStudyMember(
+                studyId,
+                deleteTarget.studyMemberId
+            );
 
-        setStudy((prev) => ({
-            ...prev,
-            currentMembers: prev.currentMembers - 1,
-            members: prev.members.filter(
-                (member) =>
-                    member.studyMemberId !== deleteTarget.studyMemberId
-            ),
-        }));
+            setStudy((prev) => ({
+                ...prev,
+                currentMembers: prev.currentMembers - 1,
+                members: prev.members.filter(
+                    (member) =>
+                        member.studyMemberId !== deleteTarget.studyMemberId
+                ),
+            }));
 
-        setDeleteTarget(null);
-    } catch (err) {
-        alert(err.message);
-    } finally {
-        setIsDeleting(false);
-    }
-};
+            setDeleteTarget(null);
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    const handleDeleteStudy = async () => {
+        if (isStudyDeleting) return;
+
+        try {
+            setIsStudyDeleting(true);
+            await deleteStudy(studyId);
+            navigate('/admin', { replace: true });
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            setIsStudyDeleting(false);
+        }
+    };
 
     const sortedMembers = [...(study?.members ?? [])].sort(
         (a, b) =>
@@ -192,6 +217,12 @@ const handleDeleteMember = async () => {
                         </button>
 
                         <h2>스터디 관리</h2>
+
+                        <SmallButton 
+                        onClick={() => setIsStudyDeleteModalOpen(true)}
+                        >
+                            삭제
+                        </SmallButton>
                     </div>
 
                     {isLoading ? (
@@ -291,6 +322,15 @@ const handleDeleteMember = async () => {
                         onConfirm={handleDeleteMember}
                         onClose={() => setDeleteTarget(null)}
                         isDeleting={isDeleting}
+                    />
+                )}
+
+                {isStudyDeleteModalOpen && (
+                    <AdminStudyDeleteModal
+                        study={study}
+                        onConfirm={handleDeleteStudy}
+                        onClose={() => setIsStudyDeleteModalOpen(false)}
+                        isDeleting={isStudyDeleting}
                     />
                 )}
             </div>
