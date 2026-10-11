@@ -46,3 +46,13 @@
     flex-direction: column;
     gap: 24px;
 }
+
+.password-reset-button {
+    border: none;
+    background: transparent;
+
+    font-size: 15px;
+    font-weight: 400;
+
+    cursor: pointer;
+}

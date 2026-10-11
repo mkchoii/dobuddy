@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import PasswordInput from '../components/common/PasswordInput';
+import PasswordResetModal from '../components/modal/PasswordResetModal';
+import PasswordResetCompleteModal from '../components/modal/PasswordResetCompleteModal';
 import Button from '../components/common/Button';
 import { login } from '../api/authApi';
 
@@ -15,6 +17,11 @@ function PasswordLoginPage() {
 
     const [pinValue, setPinValue] = useState('');
     const [errorState, setErrorState] = useState('none');
+
+    const [isPasswordResetModalOpen, setIsPasswordResetModalOpen] = useState(false);
+    const [isPasswordResetCompleteModalOpen, setIsPasswordResetCompleteModalOpen] = useState(false);
+    const [isResetting, setIsResetting] = useState(false);
+    const [resetError, setResetError] = useState('');
 
     const handlePinChange = (value) => {
         setPinValue(value);
@@ -39,6 +46,24 @@ function PasswordLoginPage() {
             }
         } catch (error) {
             setErrorState('invalid');
+        }
+    };
+
+    const handlePasswordReset = async () => {
+        if (isResetting) return;
+
+        try {
+            setIsResetting(true);
+            setResetError('');
+
+            //TODO: 비밀번호 재설정 api
+
+            setIsPasswordResetModalOpen(false);
+            setIsPasswordResetCompleteModalOpen(true);
+        } catch (error) {
+            setResetError('비밀번호 초기화에 실패했습니다. 다시 시도해 주세요.');
+        } finally {
+            setIsResetting(false);
         }
     };
 
@@ -70,7 +95,30 @@ function PasswordLoginPage() {
                     >
                         로그인
                     </Button>
+
+                    <button 
+                    type="button"
+                    className="password-reset-button"
+                    onClick={() => setIsPasswordResetModalOpen(true)}
+                    >
+                        비밀번호를 잊으셨나요?
+                    </button>
                 </div>
+                {isPasswordResetModalOpen && (
+                    <PasswordResetModal 
+                    email={email} 
+                    onConfirm={handlePasswordReset} 
+                    onClose={() => setIsPasswordResetModalOpen(false)}
+                    isResetting={isResetting}
+                    resetError={resetError}
+                    />
+                )}
+
+                {isPasswordResetCompleteModalOpen && (
+                    <PasswordResetCompleteModal
+                    onConfirm={() => setIsPasswordResetCompleteModalOpen(false)}
+                    />
+                )}
 
             </div>
         </div>
