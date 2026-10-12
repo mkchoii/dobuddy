@@ -5,7 +5,7 @@ import PasswordInput from '../components/common/PasswordInput';
 import PasswordResetModal from '../components/modal/PasswordResetModal';
 import PasswordResetCompleteModal from '../components/modal/PasswordResetCompleteModal';
 import Button from '../components/common/Button';
-import { login } from '../api/authApi';
+import { login, resetPassword } from '../api/authApi';
 
 import './AuthPage.css';
 
@@ -51,12 +51,16 @@ function PasswordLoginPage() {
 
     const handlePasswordReset = async () => {
         if (isResetting) return;
+        if (!email) {
+            setResetError('이메일 정보가 없습니다. 다시 시도하세요.');
+            return;
+        }
 
         try {
             setIsResetting(true);
             setResetError('');
 
-            //TODO: 비밀번호 재설정 api
+            await resetPassword(email);
 
             setIsPasswordResetModalOpen(false);
             setIsPasswordResetCompleteModalOpen(true);
@@ -66,6 +70,11 @@ function PasswordLoginPage() {
             setIsResetting(false);
         }
     };
+
+    const handleOpenPasswordResetModal = () => {
+        setResetError('');
+        setIsPasswordResetModalOpen(true);
+    }
 
     const errorMessage =
         errorState === 'invalid'
@@ -99,7 +108,7 @@ function PasswordLoginPage() {
                     <button 
                     type="button"
                     className="password-reset-button"
-                    onClick={() => setIsPasswordResetModalOpen(true)}
+                    onClick={handleOpenPasswordResetModal}
                     >
                         비밀번호를 잊으셨나요?
                     </button>

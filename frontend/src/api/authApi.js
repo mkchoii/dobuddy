@@ -8,8 +8,6 @@ export async function checkEmail(email) {
             'Content-Type': 'application/json',
         },
 
-        credentials: 'include',
-
         body: JSON.stringify({
             email: email,
         }),
@@ -76,5 +74,19 @@ export async function logout() {
 
     if (!response.ok) {
         throw new Error('로그아웃에 실패했습니다.');
+    }
+}
+
+export async function resetPassword(email) {
+    const response = await fetch(`${API_BASE_URL}/login/new-password`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+        throw new Error('비밀번호 초기화에 실패했습니다.');
     }
 }

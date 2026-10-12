@@ -43,7 +43,7 @@ function PasswordResetModal({
         onClick={onConfirm}
         disabled={isResetting || !email}
         >
-          확인
+          {isResetting ? '처리 중' : '확인'}
         </SmallButton>
 
       </div>
