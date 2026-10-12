@@ -116,7 +116,13 @@ function PasswordLoginPage() {
                 {isPasswordResetModalOpen && (
                     <PasswordResetModal 
                     email={email} 
-                    onConfirm={handlePasswordReset} 
+                    onConfirm={() => {
+                        if (resetError) {
+                            setIsPasswordResetModalOpen(false);
+                        } else {
+                            handlePasswordReset();
+                        }
+                    }} 
                     onClose={() => setIsPasswordResetModalOpen(false)}
                     isResetting={isResetting}
                     resetError={resetError}
