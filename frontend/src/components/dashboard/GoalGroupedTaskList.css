@@ -58,5 +58,6 @@
 }
 
 .goal-task-rows {
+    width: calc(100% - 9px);
     margin: 4px 0 0 9px;
 }

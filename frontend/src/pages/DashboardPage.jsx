@@ -342,7 +342,7 @@ function DashboardPage() {
     };
 
     if (!dashboard) {
-        return <div>대시보드를 불러오는 중입니다...</div>;
+        return <div className="dashboard-loading">대시보드를 불러오는 중입니다...</div>;
     }
 
     return (

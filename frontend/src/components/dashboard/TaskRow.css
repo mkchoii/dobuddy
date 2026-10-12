@@ -1,5 +1,7 @@
 .task-row {
-    width: 329px;
+    width: 100%;
+    max-width: 329px;
+    min-width: 0;
     height: 30px;
     padding: 0;
 

@@ -225,3 +225,15 @@
     border: 1px solid #000;
     border-radius: 8px;
 }
+
+.dashboard-loading {
+    width: 100%;
+    min-height: 100dvh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 14px;
+    color: #777;
+}
