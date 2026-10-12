@@ -11,15 +11,17 @@
 }
 
 .week-calendar-list {
-    width: 392px;
+    width: 100%;
+    max-width: 392px;
 
     display: flex;
-    gap: 10px;
+    gap: 7px;
 }
 
 .week-date-card {
     box-sizing: border-box;
     flex: 1;
+    min-width: 0;
     height: 54px;
 
     padding: 7px 6px;

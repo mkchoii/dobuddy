@@ -1,6 +1,7 @@
 .mypage {
     width: 100%;
-    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 0 16px;
 
     display: flex;
     justify-content: center;
@@ -11,14 +12,16 @@
 .mypage-container {
     width: 100%;
     max-width: 430px;
-    min-height: 100vh;
+    min-height: 100dvh;
 
     background: #FFFFFF;
 }
 
 .mypage-content {
-    width: 227px;
+    width: 100%;
+    max-width: 227px;
     margin: 93px auto 0;
+    padding: 0 8px 50px;
 
     display: flex;
     flex-direction: column;
@@ -94,7 +97,7 @@
 /* 하단 메뉴 */
 
 .mypage-menu {
-    margin-top: 201px;
+    margin-top: 100px;
 
     display: flex;
     flex-direction: column;

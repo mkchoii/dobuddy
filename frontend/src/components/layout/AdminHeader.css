@@ -1,6 +1,7 @@
 .admin-header {
     position: relative;
     width: 100%;
+    height: 60px;
 }
 
 .admin-logout-button {

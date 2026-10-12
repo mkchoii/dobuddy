@@ -1,6 +1,7 @@
 .study-dashboard-page {
     width: 100%;
-    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 0 16px;
 
     display: flex;
     justify-content: center;
@@ -11,17 +12,18 @@
 .study-dashboard-container {
     width: 100%;
     max-width: 430px;
-    min-height: 100vh;
+    min-height: 100dvh;
 
     background: #FFFFFF;
 }
 
 .study-dashboard-content {
-    width: 387px;
-    max-width: calc(100% - 42px);
+    width: 100%;
+    max-width: 387px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
+    padding: 0 8px 50px;
 }
 
 .study-dashboard-list-button {

@@ -1,6 +1,7 @@
 .study-card {
     box-sizing: border-box;
-    width: 180px;
+    width: 100%;
+    min-width: 0;
     height: 116px;
 
     position: relative;

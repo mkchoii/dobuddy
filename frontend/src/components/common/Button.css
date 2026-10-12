@@ -1,5 +1,6 @@
 .button {
     width: 100%;
+    max-width: 305px;
     height: 52px;
 
     display: flex;

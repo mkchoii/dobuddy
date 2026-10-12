@@ -1,11 +1,16 @@
 @import './StudyListPage.css';
 
 .admin-study-create-container {
-    min-height: 100vh;
-    box-sizing: border-box;
+    width: 100%;
+    max-width: 430px;
+    min-height: 100dvh;
+    background: #fff;
 }
 
 .admin-study-create-content {
+    width: 100%;
+    max-width: 408px;
+    margin: 12px auto 25px;
     padding: 30px 12px 50px;
 }
 
@@ -80,6 +85,10 @@
     width: 100%;
     max-width: 329px;
     margin: 85px auto 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .admin-study-create-submit .button {

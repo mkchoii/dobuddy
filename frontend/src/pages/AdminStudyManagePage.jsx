@@ -23,6 +23,7 @@ import StudyMemberDeleteModal from '../components/modal/StudyMemberDeleteModal';
 import AdminStudyDeleteModal from '../components/modal/AdminStudyDeleteModal';
 
 import './AdminStudyManagePage.css';
+import './StudyListPage.css';
 
 function AdminStudyManagePage() {
     const { studyId } = useParams();

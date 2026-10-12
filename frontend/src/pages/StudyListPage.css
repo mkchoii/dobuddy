@@ -1,6 +1,7 @@
 .study-list-page {
     width: 100%;
-    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 0 16px;
 
     display: flex;
     justify-content: center;
@@ -9,17 +10,17 @@
 }
 
 .study-list-container {
-   width: 100%;
-  max-width: 430px;
-  min-height: 100vh;
-  background: #fff;
+    width: 100%;
+    max-width: 430px;
+    min-height: 100dvh;
+    background: #fff;
 }
 
 .study-list-content {
-    box-sizing: border-box;
-    width: 408px;
-    margin: 10px auto 0;
-    padding: 0 18px;
+    width: 100%;
+    max-width: 408px;
+    margin: 12px auto 25px;
+    padding: 0 8px 50px;
 }
 
 .study-list-description {
@@ -35,7 +36,7 @@
 
 .study-card-list {
     display: grid;
-    grid-template-columns: repeat(2, 180px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px 9px;
 }
 

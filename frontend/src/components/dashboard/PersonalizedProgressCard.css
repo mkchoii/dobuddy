@@ -1,6 +1,6 @@
 .personalized-progress-card {
-    box-sizing: border-box;
-    width: 395px;
+    width: 100%;
+    max-width: 395px;
     height: 185px;
     padding: 10px 22px 24px;
 
