@@ -10,6 +10,7 @@ import './AuthPage.css';
 function LoginEmailPage() {
     const [email, setEmail] = useState('');
     const [errorState, setErrorState] = useState('none');
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleEmailChange = (event) => {
@@ -25,6 +26,8 @@ function LoginEmailPage() {
     };
 
     const handleSubmit = async () => {
+        if (isLoading) return;
+
         if (email.length > 30) {
             setErrorState('too_long');
             return;
@@ -38,6 +41,8 @@ function LoginEmailPage() {
         }
 
         try {
+            setIsLoading(true);
+
             const data = await checkEmail(email);
 
             if (data.next === 'LOGIN') {
@@ -58,6 +63,8 @@ function LoginEmailPage() {
 
         } catch (error) {
             console.error(error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -97,11 +104,12 @@ function LoginEmailPage() {
                     <Button
                         disabled={
                             email.length === 0 ||
-                            errorState === 'too_long'
+                            errorState === 'too_long' ||
+                            isLoading
                         }
                         onClick={handleSubmit}
                     >
-                        다음
+                        {isLoading ? '처리 중' : '다음'}
                     </Button>
                 </div>
 
