@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/signup", "/login").permitAll()
+                        .requestMatchers("/auth/**", "/signup", "/login/**").permitAll()
 
                         // 관리자 전용
                         .requestMatchers(HttpMethod.POST, "/studies")

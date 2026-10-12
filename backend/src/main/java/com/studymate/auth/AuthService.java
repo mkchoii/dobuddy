@@ -1,13 +1,10 @@
 package com.studymate.auth;
 
 import com.studymate.BusinessException;
-import com.studymate.auth.dto.EmailCheckResponse;
+import com.studymate.EmailService;
+import com.studymate.auth.dto.*;
 import com.studymate.goal.GoalRepository;
 import com.studymate.invite.InviteRepository;
-import com.studymate.auth.dto.LoginRequest;
-import com.studymate.auth.dto.LoginResponse;
-import com.studymate.auth.dto.SignupRequest;
-import com.studymate.auth.dto.SignupResponse;
 import com.studymate.user.User;
 import com.studymate.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.security.SecureRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +23,9 @@ public class AuthService {
     private final InviteRepository inviteRepository;
     private final PasswordEncoder passwordEncoder;
     private final GoalRepository goalRepository;
+
+    private final SecureRandom secureRandom = new SecureRandom();
+    private final EmailService emailService;
 
     private static final List<String> ADJECTIVES = List.of(
             "배고픈",
@@ -131,5 +132,25 @@ public class AuthService {
         boolean hasGoal = goalRepository.existsByUserId(user.getId());
 
         return new LoginResponse(user.getId(), user.getRole(), hasGoal);
+    }
+
+    public void resetPassword(EmailCheckRequest request) {
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new BusinessException(
+                        HttpStatus.UNAUTHORIZED,
+                        "이메일이 올바르지 않습니다.")
+                );
+
+        if (user == null) {
+            return;
+        }
+
+        // 임시 비밀번호 생성
+        String tempPassword = String.format("%04d", secureRandom.nextInt(10000));
+        emailService.sendTemporaryPassword(request.getEmail(), tempPassword);
+
+        user.updatePassword(passwordEncoder.encode(tempPassword));
+        userRepository.save(user);
     }
 }
