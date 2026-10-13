@@ -12,6 +12,8 @@
 
 .final-goal-edit-modal {
     position: relative;
+    display: flex;
+    align-items: center;
 
     width: 381px;
     height: 195px;
@@ -43,17 +45,27 @@
     height: 15px;
 }
 
+.final-goal-edit-modal .small-button {
+    position: absolute;
+    width: 71px;
+    height: 30px;
+    left: 155px;
+    top: 107px;
+}
+
+.final-goal-input-area {
+    position: absolute;
+    top: 58px;
+    left: 73px;
+    width: 235px;
+}
+
 .final-goal-edit-input {
     box-sizing: border-box;
-
-    position: absolute;
-    width: 235px;
+    width: 100%;
     height: 30px;
-    left: 73px;
-    top: 58px;
 
     padding: 0 15px;
-
     background: #FFFFFF;
     border: 1px solid #D9D9D9;
     border-radius: 12px;
@@ -63,16 +75,18 @@
     font-size: 11px;
     line-height: 13px;
     letter-spacing: 0.04em;
-
     color: #ACACAC;
-
     outline: none;
 }
 
-.final-goal-edit-modal .small-button {
-    position: absolute;
-    width: 71px;
-    height: 30px;
-    left: 155px;
-    top: 107px;
+.final-goal-edit-input.error {
+    border-color: #e57779;
+}
+
+.final-goal-edit-error {
+    margin: 4px 0 0;
+    font-size: 11px;
+    line-height: 14px;
+    color: #e57779;
+    text-align: left;
 }

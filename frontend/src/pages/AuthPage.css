@@ -1,11 +1,12 @@
 .auth-page {
     width: 100%;
-    min-height: 100vh;
+    min-height: 100dvh;
 
     display: flex;
     justify-content: center;
 
     background: #FFFFFF;
+    padding: 0 16px;
 }
 
 .auth-container {
@@ -13,7 +14,7 @@
 
     width: 100%;
     max-width: 430px;
-    min-height: 100vh;
+    min-height: 100dvh;
 
     display: flex;
     flex-direction: column;

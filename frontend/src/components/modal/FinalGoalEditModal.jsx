@@ -9,6 +9,8 @@ function FinalGoalEditModal({
     onConfirm,
     onClose,
 }) {
+    const isTooLong = value.length > 15;
+
     return (
         <div className="final-goal-modal-overlay">
             <div className="final-goal-edit-modal">
@@ -25,14 +27,24 @@ function FinalGoalEditModal({
                     />
                 </button>
 
-                <input
-                    type="text"
-                    className="final-goal-edit-input"
-                    value={value}
-                    onChange={(e) => onChangeText(e.target.value)}
-                />
+                <div className="final-goal-input-area">
+                    <input
+                        type="text"
+                        className={`final-goal-edit-input ${isTooLong ? 'error' : ''}`}
+                        value={value}
+                        onChange={(e) => onChangeText(e.target.value)}
+                        aria-invalid={isTooLong}
+                    />
 
-                <SmallButton onClick={onConfirm}>
+                    {isTooLong && (
+                        <p className="final-goal-edit-error" role="alert">
+                            최종 목표는 15자 이내로 입력해주세요.
+                        </p>
+                    )}
+                </div>
+                
+
+                <SmallButton onClick={onConfirm} disabled={isTooLong}>
                     수정하기
                 </SmallButton>
             </div>
