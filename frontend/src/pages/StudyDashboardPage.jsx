@@ -95,75 +95,74 @@ function StudyDashboardPage({ studyId }) {
     };
 
     return (
-        <div className="study-dashboard-page">
-            <div className="study-dashboard-container">
-                <UserHeader />
+        <>
+            <UserHeader />
+            <div className="study-dashboard-page">
+                <div className="study-dashboard-container">
+                    <main className="study-dashboard-content">
+                        <div className="study-dashboard-button-row">
+                            <button 
+                            className="study-goal-manage-button" 
+                            onClick={handleOpenGoalManage} 
+                            disabled={isMatchingGoalLoading}
+                            >
+                                <img src={linkIcon} alt="" className="study-goal-manage-icon" />
+                                <span>연동 세부목표 관리</span>
+                            </button>
 
-                <main className="study-dashboard-content">
-
-                    <div className="study-dashboard-button-row">
-                        <button 
-                        className="study-goal-manage-button" 
-                        onClick={handleOpenGoalManage} 
-                        disabled={isMatchingGoalLoading}
-                        >
-                            <img src={linkIcon} alt="" className="study-goal-manage-icon" />
-                            <span>연동 세부목표 관리</span>
-                        </button>
-
-                        <button
-                            type="button"
-                            className="study-dashboard-list-button"
-                            onClick={() => navigate('/study/list')}
-                        >
-                            스터디 목록
-                            <img
-                                src={vectorIcon}
-                                alt=""
-                                className="study-dashboard-list-icon"
-                            />
-                        </button>
-                    </div>
-                    
-
-                    {isLoading ? (
-                        <div className="study-dashboard-message">
-                            스터디 대시보드를 불러오는 중입니다.
+                            <button
+                                type="button"
+                                className="study-dashboard-list-button"
+                                onClick={() => navigate('/study/list')}
+                            >
+                                스터디 목록
+                                <img
+                                    src={vectorIcon}
+                                    alt=""
+                                    className="study-dashboard-list-icon"
+                                />
+                            </button>
                         </div>
-                    ) : errorMessage ? (
-                        <div className="study-dashboard-message">
-                            {errorMessage}
-                        </div>
-                    ) : dashboard ? (
-                        <>
-                            <StudyProfileCard study={dashboard} />
+                        
+                        {isLoading ? (
+                            <div className="study-dashboard-message">
+                                스터디 대시보드를 불러오는 중입니다.
+                            </div>
+                        ) : errorMessage ? (
+                            <div className="study-dashboard-message">
+                                {errorMessage}
+                            </div>
+                        ) : dashboard ? (
+                            <>
+                                <StudyProfileCard study={dashboard} />
 
-                            <StudyMemberList 
-                              members={dashboard.members}
-                              onMemberClick={handleMemberClick} 
-                            />
-                        </>
-                    ) : null}
-                </main>
-                {selectedMember && (
-                    <StudyMemberDetailModal
-                        member={selectedMember}
-                        goals={selectedMember.goals}
-                        onClose={() => setSelectedMember(null)}
-                    />
-                )}
+                                <StudyMemberList 
+                                members={dashboard.members}
+                                onMemberClick={handleMemberClick} 
+                                />
+                            </>
+                        ) : null}
+                    </main>
+                    {selectedMember && (
+                        <StudyMemberDetailModal
+                            member={selectedMember}
+                            goals={selectedMember.goals}
+                            onClose={() => setSelectedMember(null)}
+                        />
+                    )}
 
-                {isGoalManageOpen && (
-                    <StudyGoalManageModal 
-                    goals={matchingGoals} 
-                    studyCategory={dashboard.category}
-                    onClose={() => setIsGoalManageOpen(false)} 
-                    onConfirm={handleConfirmGoalManage}
-                    isSaving={isGoalManageSaving}
-                    />
-                )}
+                    {isGoalManageOpen && (
+                        <StudyGoalManageModal 
+                        goals={matchingGoals} 
+                        studyCategory={dashboard.category}
+                        onClose={() => setIsGoalManageOpen(false)} 
+                        onConfirm={handleConfirmGoalManage}
+                        isSaving={isGoalManageSaving}
+                        />
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 

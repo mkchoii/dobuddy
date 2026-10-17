@@ -1,18 +1,29 @@
 .admin-header {
-    position: relative;
     width: 100%;
-    height: 60px;
+    height: 80px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    box-sizing: border-box;
+}
+
+.admin-header .header {
+    width: auto;
+    padding: 0 16px;
+    align-items: center;
 }
 
 .admin-logout-button {
-    position: absolute;
-    right: 0;
-    bottom: 7px;
-
     border: none;
     background: none;
     padding: 0;
+    margin-right: 16px;
+
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
 }

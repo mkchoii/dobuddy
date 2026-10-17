@@ -10,7 +10,7 @@
     margin-top: 17px;
     padding: 0;
 
-    border: 1px solid #000000;
+    border: 1px solid #ececf1;
     border-radius: 10px;
     overflow: hidden;
 }
@@ -25,6 +25,8 @@
     box-sizing: border-box;
 
     padding: 15px 12px 0;
+
+    background-color: rgba(148, 97, 255, 0.06);
 }
 
 /* 본인과 다른 멤버 사이 구분선 */
@@ -33,7 +35,7 @@
     height: 1px;
     flex-shrink: 0;
 
-    background: #000000;
+    background: #ececf1;
 }
 
 /* 다른 멤버: 스크롤 영역 */
@@ -61,5 +63,6 @@
     padding: 12px 0 17px;
 
     font-size: 12px;
+    color: #717171;
     text-align: center;
 }

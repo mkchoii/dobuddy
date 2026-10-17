@@ -11,13 +11,8 @@
     background: #FFFFFF;
 }
 
-.header-title {
+.header-logo {
     margin: 0;
-
-    font-weight: 700;
-    font-size: 30px;
-    line-height: 36px;
-    letter-spacing: -0.02em;
-
-    color: #000000;
+    width: 168px;
+    height: 29px;
 }

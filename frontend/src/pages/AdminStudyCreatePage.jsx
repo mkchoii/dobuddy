@@ -74,107 +74,108 @@ function AdminStudyCreatePage() {
     };
 
     return (
-        <div className="study-list-page admin-study-create-page">
-            <div className="study-list-container admin-study-create-container">
-                <AdminHeader />
+        <>
+            <AdminHeader />
+            <div className="study-list-page admin-study-create-page">
+                <div className="study-list-container admin-study-create-container">
+                    <main className="admin-study-create-content">
+                        <div className="admin-study-create-heading">
+                            <button
+                                type="button"
+                                className="admin-study-back-button"
+                                onClick={() => navigate('/admin')}
+                                aria-label="스터디 목록으로 돌아가기"
+                            >
+                                <img
+                                    src={vectorLeftIcon}
+                                    alt=""
+                                    className="admin-study-back-icon"
+                                />
+                            </button>
 
-                <main className="admin-study-create-content">
-                    <div className="admin-study-create-heading">
-                        <button
-                            type="button"
-                            className="admin-study-back-button"
-                            onClick={() => navigate('/admin')}
-                            aria-label="스터디 목록으로 돌아가기"
-                        >
-                            <img
-                                src={vectorLeftIcon}
-                                alt=""
-                                className="admin-study-back-icon"
-                            />
-                        </button>
-
-                        <h2>스터디 개설</h2>
-                    </div>
-
-                    <section className="admin-study-create-card">
-                        <div className="admin-study-create-field">
-                            <label className="admin-study-create-label">
-                                스터디명
-                            </label>
-
-                            <Input
-                                type="text"
-                                placeholder="스터디명 입력(최대 10자)"
-                                value={studyName}
-                                onChange={(e) => {
-                                    setStudyName(e.target.value);
-                                    setNameError('');
-                                }}
-                                errorMessage={nameError}
-                            />
+                            <h2>스터디 개설</h2>
                         </div>
 
-                        <div className="admin-study-create-field">
-                            <p className="admin-study-create-label">
-                                카테고리 선택
-                            </p>
+                        <section className="admin-study-create-card">
+                            <div className="admin-study-create-field">
+                                <label className="admin-study-create-label">
+                                    스터디명
+                                </label>
 
-                            <div className="admin-study-create-categories">
-                                {CATEGORIES.map((item) => (
-                                    <CategoryChip
-                                        key={item.value}
-                                        category={item}
-                                        isSelected={category === item.value}
-                                        onClick={() => {
-                                            setCategory(item.value);
-                                            setCategoryError('');
-                                        }}
-                                    />
-                                ))}
+                                <Input
+                                    type="text"
+                                    placeholder="스터디명 입력(최대 10자)"
+                                    value={studyName}
+                                    onChange={(e) => {
+                                        setStudyName(e.target.value);
+                                        setNameError('');
+                                    }}
+                                    errorMessage={nameError}
+                                />
                             </div>
 
-                            {categoryError && (
+                            <div className="admin-study-create-field">
+                                <p className="admin-study-create-label">
+                                    카테고리 선택
+                                </p>
+
+                                <div className="admin-study-create-categories">
+                                    {CATEGORIES.map((item) => (
+                                        <CategoryChip
+                                            key={item.value}
+                                            category={item}
+                                            isSelected={category === item.value}
+                                            onClick={() => {
+                                                setCategory(item.value);
+                                                setCategoryError('');
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+
+                                {categoryError && (
+                                    <p className="admin-study-create-error">
+                                        {categoryError}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="admin-study-create-field">
+                                <label className="admin-study-create-label">
+                                    정원
+                                </label>
+
+                                <Input
+                                    type="number"
+                                    placeholder="최소 2명~최대 20명, 기본 10명"
+                                    value={maxMembers}
+                                    onChange={(e) => {
+                                        setMaxMembers(e.target.value);
+                                        setMembersError('');
+                                    }}
+                                    errorMessage={membersError}
+                                />
+                            </div>
+                        </section>
+
+                        <div className="admin-study-create-submit">
+                            <Button
+                                onClick={handleCreate}
+                                disabled={isCreating}
+                            >
+                                {isCreating ? '개설 중...' : '개설하기'}
+                            </Button>
+
+                            {error && (
                                 <p className="admin-study-create-error">
-                                    {categoryError}
+                                    {error}
                                 </p>
                             )}
                         </div>
-
-                        <div className="admin-study-create-field">
-                            <label className="admin-study-create-label">
-                                정원
-                            </label>
-
-                            <Input
-                                type="number"
-                                placeholder="최소 2명~최대 20명, 기본 10명"
-                                value={maxMembers}
-                                onChange={(e) => {
-                                    setMaxMembers(e.target.value);
-                                    setMembersError('');
-                                }}
-                                errorMessage={membersError}
-                            />
-                        </div>
-                    </section>
-
-                    <div className="admin-study-create-submit">
-                        <Button
-                            onClick={handleCreate}
-                            disabled={isCreating}
-                        >
-                            {isCreating ? '개설 중...' : '개설하기'}
-                        </Button>
-
-                        {error && (
-                            <p className="admin-study-create-error">
-                                {error}
-                            </p>
-                        )}
-                    </div>
-                </main>
+                    </main>
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 

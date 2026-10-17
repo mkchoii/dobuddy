@@ -1,9 +1,12 @@
 .goal-setting-page {
     width: 100%;
-    min-height: 100vh;
+    min-height: 100dvh;
+
     display: flex;
     justify-content: center;
+
     background: #FFFFFF;
+    padding: 0 16px;
 }
 
 .goal-setting-container {
@@ -23,7 +26,7 @@
 
 .goal-setting-description {
     width: 305px;
-    margin: 37px;
+    margin: 30px;
 
     font-family: 'Inter', sans-serif;
     font-weight: 400;
@@ -35,32 +38,44 @@
 }
 
 .goal-category-area {
-    width: 348px;
-    margin-top: 54px;
+    width: 100%;
+    max-width: 348px;
+    margin: 20px auto 0;
+    padding: 0 13px;
 }
 
 .goal-category-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
 
+.goal-category-text {
     font-family: 'Inter', sans-serif;
     font-size: 15px;
+    font-weight: 400;
     line-height: 18px;
+}
+
+.goal-reset-button {
+    padding: 0;
+    margin-right: 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.trash-icon {
+    display: block;
+    width: 16px;
+    height: 18px;
 }
 
 .category-list {
     display: flex;
     flex-wrap: wrap;
     gap: 8px 10px;
-    margin-top: 6px;
-}
-
-.goal-reset-button {
-    padding: 0;
-    border: none;
-    background: transparent;
-    cursor: pointer;
+    margin-top: 3px;
 }
 
 .goal-input-area {
@@ -73,15 +88,3 @@
     margin-top: 13px;
 }
 
-.goal-reset-button {
-    padding: 0;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-}
-
-.trash-icon {
-    display: block;
-    width: 16px;
-    height: 18px;
-}

@@ -5,6 +5,7 @@ import Button from '../components/common/Button';
 import { getMe } from '../api/userApi';
 
 import './SignupCompletePage.css';
+import './AuthPage.css';
 
 function SignupCompletePage() {
     const navigate = useNavigate();
@@ -32,9 +33,7 @@ function SignupCompletePage() {
         <div className="signup-complete-page">
             <div className="signup-complete-container">
 
-                <h1 className="auth-title">
-                    StudyMate
-                </h1>
+                <div className="auth-logo" role="img" aria-label="로고"/>
 
                 <div className="signup-complete-content">
                     <p className="signup-complete-message">

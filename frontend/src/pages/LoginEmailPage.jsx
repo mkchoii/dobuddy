@@ -88,9 +88,7 @@ function LoginEmailPage() {
         <div className="auth-page">
             <div className="auth-container">
 
-                <h1 className="auth-title">
-                    StudyMate
-                </h1>
+                <div className="auth-logo" role="img" aria-label="로고"/>
 
                 <div className="auth-form">
                     <Input

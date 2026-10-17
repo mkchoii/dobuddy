@@ -9,6 +9,7 @@ import trashIcon from '../assets/icons/trash.svg';
 import { createGoal } from '../api/goalApi';
 
 import './GoalSettingPage.css';
+import './AuthPage.css';
 
 function GoalSettingPage() {
     const navigate = useNavigate();
@@ -68,17 +69,15 @@ function GoalSettingPage() {
         <div className="goal-setting-page">
             <div className="goal-setting-container">
 
-                <h1 className="auth-title">
-                    StudyMate
-                </h1>
+                <div className="auth-logo" role="img" aria-label="로고"/>
 
                 <p className="goal-setting-description">
-                    달성하고 싶은 세부목표를 설정해주세요.
+                    달성하고 싶은 목표를 설정해주세요.
                 </p>
 
                 <div className="goal-category-area">
                     <div className="goal-category-header">
-                        <span>세부 목표 선택</span>
+                        <p className="goal-category-text">세부 목표 선택</p>
 
                         <button
                             type="button"

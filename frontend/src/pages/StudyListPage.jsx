@@ -92,78 +92,79 @@ function StudyListPage({ isJoined, onJoined }) {
     };
 
     return (
-        <div className="study-list-page">
-          <div className="study-list-container">
+        <>
             <UserHeader />
+            <div className="study-list-page">
+                <div className="study-list-container">
+                    <main className="study-list-content">
+                        <StudyCategoryFilter
+                        selectedCategory={selectedCategory}
+                        onSelectCategory={setSelectedCategory}
+                        />
 
-            <main className="study-list-content">
-                <StudyCategoryFilter
-                  selectedCategory={selectedCategory}
-                  onSelectCategory={setSelectedCategory}
-                />
+                        <p className="study-list-description">
+                            개인 대시보드에서 생성한 ‘세부 목표 카테고리’와
+                            일치하는 스터디만 참여할 수 있습니다.
+                        </p>
 
-                <p className="study-list-description">
-                    개인 대시보드에서 생성한 ‘세부 목표 카테고리’와
-                    일치하는 스터디만 참여할 수 있습니다.
-                </p>
+                        {isLoading ? (
+                            <p className="study-list-message">
+                                스터디를 불러오는 중입니다.
+                            </p>
+                        ) : studies.length === 0 ? (
+                            <p className="study-list-message">
+                                해당 카테고리의 스터디가 없습니다.
+                            </p>
+                        ) : (
+                            <div className="study-card-list">
+                                {studies.map((study) => (
+                                    <StudyCard
+                                    key={study.studyId}
+                                    study={study}
+                                    isJoined={isJoined}
+                                    onJoin={handleJoinClick}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </main>
+                    {selectedStudy && !isAvailabilityWarningOpen && (
+                        <StudyGoalLinkModal
+                            study={selectedStudy}
+                            onClose={() => {
+                                setSelectedStudy(null);
+                                setJoinError('');
+                            }}
+                            onComplete={handleJoinStudy}
+                            isSubmitting={isJoining}
+                            submitError={joinError}
+                        />
+                    )}
 
-                {isLoading ? (
-                    <p className="study-list-message">
-                        스터디를 불러오는 중입니다.
-                    </p>
-                ) : studies.length === 0 ? (
-                    <p className="study-list-message">
-                        해당 카테고리의 스터디가 없습니다.
-                    </p>
-                ) : (
-                    <div className="study-card-list">
-                        {studies.map((study) => (
-                            <StudyCard
-                              key={study.studyId}
-                              study={study}
-                              isJoined={isJoined}
-                              onJoin={handleJoinClick}
-                            />
-                        ))}
-                    </div>
-                )}
-            </main>
-            {selectedStudy && !isAvailabilityWarningOpen && (
-                <StudyGoalLinkModal
-                    study={selectedStudy}
-                    onClose={() => {
-                        setSelectedStudy(null);
-                        setJoinError('');
-                    }}
-                    onComplete={handleJoinStudy}
-                    isSubmitting={isJoining}
-                    submitError={joinError}
-                />
-            )}
+                    {joinedStudy && (
+                        <StudyJoinSuccessModal
+                            studyName={joinedStudy.studyName}
+                            onConfirm={() => {
+                                onJoined(joinedStudy.studyId);
+                                navigate('/study');
+                            }}
+                        />
+                    )}
 
-            {joinedStudy && (
-                <StudyJoinSuccessModal
-                    studyName={joinedStudy.studyName}
-                    onConfirm={() => {
-                        onJoined(joinedStudy.studyId);
-                        navigate('/study');
-                    }}
-                />
-            )}
-
-            {isAvailabilityWarningOpen && (
-                <StudyAvailabilityWarningModal 
-                studyName={selectedStudy.studyName}
-                onClose={() => {
-                    setIsAvailabilityWarningOpen(false);
-                    setSelectedStudy(null);
-                    setJoinError('');
-                    setReloadStudyList(prev => prev + 1);
-                }}
-                />
-            )}
-          </div>
-        </div>
+                    {isAvailabilityWarningOpen && (
+                        <StudyAvailabilityWarningModal 
+                        studyName={selectedStudy.studyName}
+                        onClose={() => {
+                            setIsAvailabilityWarningOpen(false);
+                            setSelectedStudy(null);
+                            setJoinError('');
+                            setReloadStudyList(prev => prev + 1);
+                        }}
+                        />
+                    )}
+                </div>
+            </div>
+        </>
     );
 }
 

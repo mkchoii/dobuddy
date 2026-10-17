@@ -1,11 +1,10 @@
 import './Header.css';
+import logoHeader from '../../assets/icons/logo-header.svg';
 
 function Header() {
     return (
         <header className="header">
-            <h1 className="header-title">
-                StudyMate
-            </h1>
+            <img className="header-logo" src={logoHeader}/>
         </header>
     );
 }

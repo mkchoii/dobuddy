@@ -198,144 +198,146 @@ function AdminStudyManagePage() {
     );
 
     return (
-        <div className="study-list-page admin-study-manage-page">
-            <div className="study-list-container admin-study-manage-container">
-                <AdminHeader />
+        <>
+            <AdminHeader />
+            <div className="study-list-page admin-study-manage-page">
+                <div className="study-list-container admin-study-manage-container">
 
-                <main className="admin-study-manage-content">
-                    <div className="admin-study-manage-heading">
-                        <button
-                            type="button"
-                            className="admin-study-back-button"
-                            onClick={() => navigate('/admin')}
-                            aria-label="스터디 목록으로 돌아가기"
-                        >
-                            <img
-                              src={vectorLeftIcon}
-                              alt=""
-                              className="admin-study-back-icon"
-                            />
-                        </button>
-
-                        <h2>스터디 관리</h2>
-
-                        <SmallButton 
-                        onClick={() => setIsStudyDeleteModalOpen(true)}
-                        >
-                            삭제
-                        </SmallButton>
-                    </div>
-
-                    {isLoading ? (
-                        <p className="study-list-message">
-                            스터디 정보를 불러오는 중입니다.
-                        </p>
-                    ) : !study ? (
-                        <p className="study-list-message">
-                            {error || '스터디 정보를 찾을 수 없습니다.'}
-                        </p>
-                    ) : (
-                        <>
-                            <section className="admin-study-edit-card">
-                                <Input
-                                    type="text"
-                                    placeholder="스터디 이름"
-                                    value={studyName}
-                                    onChange={(e) => {
-                                      setStudyName(e.target.value)
-                                      setNameError('');
-                                    }}
-                                    errorMessage={nameError}
-                                    className="admin-study-input"
+                    <main className="admin-study-manage-content">
+                        <div className="admin-study-manage-heading">
+                            <button
+                                type="button"
+                                className="admin-study-back-button"
+                                onClick={() => navigate('/admin')}
+                                aria-label="스터디 목록으로 돌아가기"
+                            >
+                                <img
+                                src={vectorLeftIcon}
+                                alt=""
+                                className="admin-study-back-icon"
                                 />
+                            </button>
 
-                                <div className="admin-study-category-list">
-                                    {CATEGORIES.map((item) => (
-                                        <CategoryChip
-                                            key={item.value}
-                                            category={item}
-                                            isSelected={category === item.value}
-                                            onClick={() => setCategory(item.value)}
+                            <h2>스터디 관리</h2>
+
+                            <SmallButton 
+                            onClick={() => setIsStudyDeleteModalOpen(true)}
+                            >
+                                삭제
+                            </SmallButton>
+                        </div>
+
+                        {isLoading ? (
+                            <p className="study-list-message">
+                                스터디 정보를 불러오는 중입니다.
+                            </p>
+                        ) : !study ? (
+                            <p className="study-list-message">
+                                {error || '스터디 정보를 찾을 수 없습니다.'}
+                            </p>
+                        ) : (
+                            <>
+                                <section className="admin-study-edit-card">
+                                    <Input
+                                        type="text"
+                                        placeholder="스터디 이름"
+                                        value={studyName}
+                                        onChange={(e) => {
+                                        setStudyName(e.target.value)
+                                        setNameError('');
+                                        }}
+                                        errorMessage={nameError}
+                                        className="admin-study-input"
+                                    />
+
+                                    <div className="admin-study-category-list">
+                                        {CATEGORIES.map((item) => (
+                                            <CategoryChip
+                                                key={item.value}
+                                                category={item}
+                                                isSelected={category === item.value}
+                                                onClick={() => setCategory(item.value)}
+                                            />
+                                        ))}
+                                    </div>
+
+                                    <Input
+                                        type="number"
+                                        placeholder="최대 인원"
+                                        value={maxMembers}
+                                        onChange={(e) => {
+                                        setMaxMembers(e.target.value)
+                                        setMembersError('');
+                                        }}
+                                        errorMessage={membersError}
+                                        className="admin-study-input"
+                                    />
+
+                                    <Button
+                                        onClick={handleUpdate}
+                                        disabled={isSaving}
+                                    >
+                                        {isSaving ? '수정 중...' : '수정하기'}
+                                    </Button>
+
+                                    {error && (
+                                        <p className="admin-study-form-error">{error}</p>
+                                    )}
+                                </section>
+
+                                <section className="admin-study-member-card">
+                                    {sortedMembers.map((member) => (
+                                        <StudyMemberRow
+                                            key={member.studyMemberId}
+                                            member={member}
+                                            onMemberClick={handleMemberClick}
                                         />
                                     ))}
-                                </div>
-
-                                <Input
-                                    type="number"
-                                    placeholder="최대 인원"
-                                    value={maxMembers}
-                                    onChange={(e) => {
-                                      setMaxMembers(e.target.value)
-                                      setMembersError('');
-                                    }}
-                                    errorMessage={membersError}
-                                    className="admin-study-input"
-                                />
-
-                                <Button
-                                    onClick={handleUpdate}
-                                    disabled={isSaving}
-                                >
-                                    {isSaving ? '수정 중...' : '수정하기'}
-                                </Button>
-
-                                {error && (
-                                    <p className="admin-study-form-error">{error}</p>
+                                </section>
+                                {isMemberLoading && (
+                                    <p className="study-list-message">
+                                        멤버 정보를 불러오는 중입니다.
+                                    </p>
                                 )}
-                            </section>
 
-                            <section className="admin-study-member-card">
-                                {sortedMembers.map((member) => (
-                                    <StudyMemberRow
-                                        key={member.studyMemberId}
-                                        member={member}
-                                        onMemberClick={handleMemberClick}
-                                    />
-                                ))}
-                            </section>
-                            {isMemberLoading && (
-                                <p className="study-list-message">
-                                    멤버 정보를 불러오는 중입니다.
-                                </p>
-                            )}
-
-                            {memberError && (
-                                <p className="admin-study-form-error">
-                                    {memberError}
-                                </p>
-                            )}
-                        </>
+                                {memberError && (
+                                    <p className="admin-study-form-error">
+                                        {memberError}
+                                    </p>
+                                )}
+                            </>
+                        )}
+                    </main>
+                    {selectedMember && (
+                        <StudyMemberDetailModal
+                            member={selectedMember}
+                            goals={selectedMember.goals}
+                            onClose={() => setSelectedMember(null)}
+                            isAdmin
+                            onKick={handleOpenDeleteModal}
+                        />
                     )}
-                </main>
-                {selectedMember && (
-                    <StudyMemberDetailModal
-                        member={selectedMember}
-                        goals={selectedMember.goals}
-                        onClose={() => setSelectedMember(null)}
-                        isAdmin
-                        onKick={handleOpenDeleteModal}
-                    />
-                )}
-                
-                {deleteTarget && (
-                    <StudyMemberDeleteModal
-                        member={deleteTarget}
-                        onConfirm={handleDeleteMember}
-                        onClose={() => setDeleteTarget(null)}
-                        isDeleting={isDeleting}
-                    />
-                )}
+                    
+                    {deleteTarget && (
+                        <StudyMemberDeleteModal
+                            member={deleteTarget}
+                            onConfirm={handleDeleteMember}
+                            onClose={() => setDeleteTarget(null)}
+                            isDeleting={isDeleting}
+                        />
+                    )}
 
-                {isStudyDeleteModalOpen && (
-                    <AdminStudyDeleteModal
-                        study={study}
-                        onConfirm={handleDeleteStudy}
-                        onClose={() => setIsStudyDeleteModalOpen(false)}
-                        isDeleting={isStudyDeleting}
-                    />
-                )}
+                    {isStudyDeleteModalOpen && (
+                        <AdminStudyDeleteModal
+                            study={study}
+                            onConfirm={handleDeleteStudy}
+                            onClose={() => setIsStudyDeleteModalOpen(false)}
+                            isDeleting={isStudyDeleting}
+                        />
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 

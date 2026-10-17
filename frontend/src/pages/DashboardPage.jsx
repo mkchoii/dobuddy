@@ -11,6 +11,7 @@ import FinalGoalEditModal from '../components/modal/FinalGoalEditModal';
 import GoalManagementModal from '../components/modal/GoalManagementModal';
 
 import vectorIcon from '../assets/icons/vector.svg';
+import goalIcon from '../assets/icons/goal.svg';
 
 import {
     getDashboard,
@@ -346,84 +347,88 @@ function DashboardPage() {
     }
 
     return (
-        <div className="dashboard-page">
-            <div className="dashboard-container">
-                <UserHeader />
+        <>
+            <UserHeader />
+       
+            <div className="dashboard-page">
+                <div className="dashboard-container">
 
-                <main className="dashboard-content">
-                    <button
-                        type="button"
-                        className="dashboard-more-button"
-                        onClick={handleClickMore}
-                    >
-                        더보기
+                    <main className="dashboard-content">
+                        <button
+                            type="button"
+                            className="dashboard-more-button"
+                            onClick={handleClickMore}
+                        >
+                            더보기
 
-                        <img
-                            src={vectorIcon}
-                            alt=""
-                            className="dashboard-more-icon"
+                            <img
+                                src={vectorIcon}
+                                alt=""
+                                className="dashboard-more-icon"
+                            />
+                        </button>
+
+                        {topCardMode === 'finalGoal' ? (
+                            <GoalSummaryCard
+                                finalGoal={dashboard.finalGoal}
+                                weeklyProgress={dashboard.weeklyProgress}
+                                onClickEditIcon={
+                                    handleOpenFinalGoalEditPopup
+                                }
+                            />
+                        ) : (
+                            <PersonalizedProgressCard
+                                nickname={dashboard.nickname}
+                                goalProgress={dashboard.goalProgress}
+                                selectedGoalId={selectedGoalId}
+                            />
+                        )}
+
+                        <WeekCalendar
+                            selectedDate={dashboard.selectedDate}
+                            onSelectDate={handleSelectDate}
                         />
-                    </button>
 
-                    {topCardMode === 'finalGoal' ? (
-                        <GoalSummaryCard
-                            finalGoal={dashboard.finalGoal}
-                            weeklyProgress={dashboard.weeklyProgress}
-                            onClickEditIcon={
-                                handleOpenFinalGoalEditPopup
-                            }
+                        <button
+                            type="button"
+                            className="goal-manage-button"
+                            onClick={() => setIsGoalManagementOpen(true)}
+                        >
+                            <img src={goalIcon} alt="" className="goal-manage-icon" />
+                            <span>세부목표 관리</span>
+                        </button>
+
+                        <TaskListCard
+                            selectedDate={dashboard.selectedDate}
+                            goals={dashboard.goals}
+                            onCheckTask={handleCheckTask}
+                            onEditTask={handleEditTask}
+                            onDeleteTask={handleDeleteTask}
+                            onCreateTask={handleCreateTask}
                         />
-                    ) : (
-                        <PersonalizedProgressCard
-                            nickname={dashboard.nickname}
-                            goalProgress={dashboard.goalProgress}
-                            selectedGoalId={selectedGoalId}
+                    </main>
+
+                    {isFinalGoalEditModalOpen && (
+                        <FinalGoalEditModal
+                            value={finalGoalInput}
+                            onChangeText={setFinalGoalInput}
+                            onConfirm={handleConfirmFinalGoal}
+                            onClose={handleCloseFinalGoalEditPopup}
                         />
                     )}
 
-                    <WeekCalendar
-                        selectedDate={dashboard.selectedDate}
-                        onSelectDate={handleSelectDate}
-                    />
-
-                    <button
-                        type="button"
-                        className="goal-manage-button"
-                        onClick={() => setIsGoalManagementOpen(true)}
-                    >
-                        세부목표 관리
-                    </button>
-
-                    <TaskListCard
-                        selectedDate={dashboard.selectedDate}
-                        goals={dashboard.goals}
-                        onCheckTask={handleCheckTask}
-                        onEditTask={handleEditTask}
-                        onDeleteTask={handleDeleteTask}
-                        onCreateTask={handleCreateTask}
-                    />
-                </main>
-
-                {isFinalGoalEditModalOpen && (
-                    <FinalGoalEditModal
-                        value={finalGoalInput}
-                        onChangeText={setFinalGoalInput}
-                        onConfirm={handleConfirmFinalGoal}
-                        onClose={handleCloseFinalGoalEditPopup}
-                    />
-                )}
-
-                {isGoalManagementOpen && (
-                    <GoalManagementModal
-                        goals={dashboard.goals}
-                        onCreate={handleCreateGoal}
-                        onUpdate={handleUpdateGoal}
-                        onDelete={handleDeleteGoal}
-                        onClose={() => setIsGoalManagementOpen(false)}
-                    />
-                )}
+                    {isGoalManagementOpen && (
+                        <GoalManagementModal
+                            goals={dashboard.goals}
+                            onCreate={handleCreateGoal}
+                            onUpdate={handleUpdateGoal}
+                            onDelete={handleDeleteGoal}
+                            onClose={() => setIsGoalManagementOpen(false)}
+                        />
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 

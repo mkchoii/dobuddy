@@ -6,7 +6,7 @@
     display: flex;
     justify-content: center;
 
-    background: #FFFFFF;
+    background: #f5f5f8;
 }
 
 .mypage-container {
@@ -14,7 +14,7 @@
     max-width: 430px;
     min-height: 100dvh;
 
-    background: #FFFFFF;
+    background: #f5f5f8;
 }
 
 .mypage-content {
