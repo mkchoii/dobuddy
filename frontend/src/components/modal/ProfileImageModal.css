@@ -17,7 +17,7 @@
     position: relative;
 
     width: 381px;
-    height: 456px;
+    height: 593px;
 
     display: flex;
     flex-direction: column;
@@ -118,5 +118,6 @@
 /* 완료 버튼 */
 
 .profile-image-modal .small-button {
-    margin-top: 33px;
+    margin-top: auto;
+    margin-bottom: 50px;
 }

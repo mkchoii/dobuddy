@@ -1,11 +1,15 @@
-import profile1 from './profile1.svg';
-import profile2 from './profile2.svg';
-import profile3 from './profile3.svg';
-import profile4 from './profile4.svg';
+import cat from './cat.svg';
+import elephant from './elephant.svg';
+import fox from './fox.svg';
+import otter from './otter.svg';
+import rabbit from './rabbit.svg';
+import tiger from './tiger.svg';
 
 export const profileImages = {
-    1: profile1,
-    2: profile2,
-    3: profile3,
-    4: profile4,
+    1: cat,
+    2: elephant,
+    3: fox,
+    4: otter,
+    5: rabbit,
+    6: tiger
 };

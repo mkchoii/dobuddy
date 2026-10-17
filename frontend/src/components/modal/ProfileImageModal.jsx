@@ -36,7 +36,7 @@ function ProfileImageModal({
                 </p>
 
                 <div className="profile-image-options">
-                    {[1, 2, 3, 4].map((id) => (
+                    {[1, 2, 3, 4, 5, 6].map((id) => (
                         <button
                             key={id}
                             type="button"

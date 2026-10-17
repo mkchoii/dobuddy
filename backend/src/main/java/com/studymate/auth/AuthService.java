@@ -116,7 +116,7 @@ public class AuthService {
     }
 
     private int generateProfileImageId() {
-        return (int) (Math.random() * 4) + 1;
+        return (int) (Math.random() * 6) + 1;
     }
 
     public LoginResponse login(LoginRequest request) {
