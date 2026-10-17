@@ -25,9 +25,9 @@
 
 /* 스터디 추가 버튼 */
 .admin-study-add-button {
-    position: absolute;
+    position: fixed;
     right: 24px;
-    bottom: 50px;
+    bottom: 30px;
 
     width: 60px;
     height: 60px;
