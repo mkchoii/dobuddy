@@ -1,0 +1,55 @@
+.study-warning-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1100;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.study-warning-modal {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+
+    padding: 42px 24px 24px;
+    width: min(381px, calc(100vw - 32px));
+    height: 195px;
+
+    background: #ffffff;
+    border-radius: 20px;
+}
+
+.study-warning-title {
+    margin: 17px 0 0;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 19px;
+    text-align: center;
+
+    color: #000000;
+}
+
+.study-warning-description {
+    margin: 4px 0 0;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    text-align: center;
+
+    color: #8b8b8b;
+}
+
+.study-warning-action {
+  margin-top: auto;
+  margin-bottom: auto;
+}

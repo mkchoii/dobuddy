@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getStudies, joinStudy } from '../api/studyApi';
+import { getStudies, joinStudy, getStudyAvailability } from '../api/studyApi';
 
 import UserHeader from '../components/layout/UserHeader';
 import StudyCategoryFilter from '../components/study/StudyCategoryFilter';
@@ -9,6 +9,7 @@ import StudyGoalLinkModal from '../components/modal/StudyGoalLinkModal';
 import StudyJoinSuccessModal from '../components/modal/StudyJoinSuccessModal';
 
 import './StudyListPage.css';
+import StudyAvailabilityWarningModal from '../components/modal/StudyAvailabilityWarningModal';
 
 
 function StudyListPage({ isJoined, onJoined }) {
@@ -20,6 +21,9 @@ function StudyListPage({ isJoined, onJoined }) {
     const [joinedStudy, setJoinedStudy] = useState(null);
     const [joinError, setJoinError] = useState('');
     const [isJoining, setIsJoining] = useState(false);
+    const [isAvailabilityWarningOpen, setIsAvailabilityWarningOpen] = useState(false);
+    const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
+    const [reloadStudyList, setReloadStudyList] = useState(0);
 
     useEffect(() => {
         const loadStudies = async () => {
@@ -37,7 +41,7 @@ function StudyListPage({ isJoined, onJoined }) {
         };
 
         loadStudies();
-    }, [selectedCategory]);
+    }, [selectedCategory, reloadStudyList]);
 
     const handleJoinStudy = async (studyId, goalIds) => {
         if (isJoining) return;
@@ -56,9 +60,34 @@ function StudyListPage({ isJoined, onJoined }) {
                 setSelectedStudy(null);
             }
         } catch (error) {
+            if (error.status === 409) {
+                setIsAvailabilityWarningOpen(true);
+                return;
+            }
             setJoinError(error.message);
         } finally {
             setIsJoining(false);
+        }
+    };
+
+    const handleJoinClick = async (study) => {
+        if (isCheckingAvailability) return;
+
+        try {
+            setIsCheckingAvailability(true);
+
+            const { canJoin } = await getStudyAvailability(study.studyId);
+            setSelectedStudy(study);
+
+            if (!canJoin) {
+                setIsAvailabilityWarningOpen(true);
+            }
+            
+        } catch (error) {
+            console.error('스터디 정원 확인 실패:', error);
+            setJoinError(error.message);
+        } finally {
+            setIsCheckingAvailability(false);
         }
     };
 
@@ -93,13 +122,13 @@ function StudyListPage({ isJoined, onJoined }) {
                               key={study.studyId}
                               study={study}
                               isJoined={isJoined}
-                              onJoin={setSelectedStudy}
+                              onJoin={handleJoinClick}
                             />
                         ))}
                     </div>
                 )}
             </main>
-            {selectedStudy && (
+            {selectedStudy && !isAvailabilityWarningOpen && (
                 <StudyGoalLinkModal
                     study={selectedStudy}
                     onClose={() => {
@@ -119,6 +148,18 @@ function StudyListPage({ isJoined, onJoined }) {
                         onJoined(joinedStudy.studyId);
                         navigate('/study');
                     }}
+                />
+            )}
+
+            {isAvailabilityWarningOpen && (
+                <StudyAvailabilityWarningModal 
+                studyName={selectedStudy.studyName}
+                onClose={() => {
+                    setIsAvailabilityWarningOpen(false);
+                    setSelectedStudy(null);
+                    setJoinError('');
+                    setReloadStudyList(prev => prev + 1);
+                }}
                 />
             )}
           </div>

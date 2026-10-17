@@ -96,7 +96,10 @@ export async function joinStudy(studyId, goalIds) {
             message = data.message || message;
         } catch {}
 
-        throw new Error(message);
+        const error = new Error(message);
+        error.status = response.status;
+
+        throw error;
     }
 
     return await response.json();
@@ -248,4 +251,19 @@ export async function updateStudyGoal(studyId, goalIds) {
     if (!response.ok) {
         throw new Error('연동 세부목표 수정에 실패했습니다.');
     }
+}
+
+export async function getStudyAvailability(studyId) {
+    const response = await fetch(`${API_BASE_URL}/studies/${studyId}/availability`,
+        {
+            method: 'GET',
+            credentials: 'include'
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error('스터디 정원 조회에 실패했습니다.');
+    }
+
+    return response.json();
 }

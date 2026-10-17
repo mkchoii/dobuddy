@@ -55,9 +55,10 @@ public class StudyService {
         );
     }
 
+    @Transactional
     public StudyResponse updateStudy(Integer studyId, StudyUpdateRequest request) {
 
-        Study study = studyRepository.findById(studyId)
+        Study study = studyRepository.findByIdForUpdate(studyId)
                 .orElseThrow(() -> new BusinessException(
                         HttpStatus.NOT_FOUND,
                         "스터디를 찾을 수 없습니다."
@@ -72,6 +73,15 @@ public class StudyService {
         }
 
         if (request.getMaxMembers() != null) {
+            long currentMembers = studyMemberRepository.countByStudyId(studyId);
+
+            if (request.getMaxMembers() < currentMembers) {
+                throw new BusinessException(
+                        HttpStatus.BAD_REQUEST,
+                        "현재 참여 인원보다 정원을 적게 설정할 수 없습니다."
+                );
+            }
+
             study.updateMaxMembers(request.getMaxMembers());
         }
 
@@ -192,9 +202,10 @@ public class StudyService {
         );
     }
 
+    @Transactional
     public StudyJoinResponse joinStudy(Integer userId, Integer studyId, StudyJoinRequest request) {
 
-        Study study = studyRepository.findById(studyId)
+        Study study = studyRepository.findByIdForUpdate(studyId)
                 .orElseThrow(() -> new BusinessException(
                         HttpStatus.NOT_FOUND,
                         "스터디를 찾을 수 없습니다."
@@ -215,7 +226,7 @@ public class StudyService {
 
         if (studyMemberRepository.existsByStudyIdAndUserId(studyId, userId)) {
             throw new BusinessException(
-                    HttpStatus.CONFLICT,
+                    HttpStatus.BAD_REQUEST,
                     "이미 참여중인 스터디입니다."
             );
         }
@@ -493,5 +504,20 @@ public class StudyService {
                 .toList();
 
         studyMemberGoalRepository.saveAll(toAdd);
+    }
+
+    public StudyAvailabilityResponse getStudyAvailability(Integer studyId) {
+
+        Study study = studyRepository.findById(studyId)
+                .orElseThrow(() -> new BusinessException(
+                        HttpStatus.NOT_FOUND,
+                        "스터디가 존재하지 않습니다."
+                ));
+
+        long currentMembers = studyMemberRepository.countByStudyId(studyId);
+
+        boolean canJoin = currentMembers < study.getMaxMembers();
+
+        return new StudyAvailabilityResponse(canJoin);
     }
 }

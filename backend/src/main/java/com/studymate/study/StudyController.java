@@ -128,4 +128,12 @@ public class StudyController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{studyId}/availability")
+    public ResponseEntity<StudyAvailabilityResponse> getStudyAvailability(@PathVariable Integer studyId) {
+
+        StudyAvailabilityResponse response = studyService.getStudyAvailability(studyId);
+
+        return ResponseEntity.ok(response);
+    }
 }
