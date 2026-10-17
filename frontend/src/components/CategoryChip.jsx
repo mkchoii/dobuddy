@@ -4,12 +4,26 @@ function CategoryChip({
     category,
     label,
     isSelected = false,
+    isLinked = false,
     onClick,
     size = 'default',
 }) {
     const className = `category-chip category-${category.value.toLowerCase()} ${
         isSelected ? 'selected' : ''
     } ${size === 'small' ? 'small' : ''}`;
+
+    const content = (
+        <>
+            <span>{label ?? category.label}</span>
+            {isLinked && (
+                <span
+                className="category-chip-link-icon"
+                aria-label="스터디 연동됨"
+                role="img"
+                />
+            )}
+        </>
+    );
 
     // 클릭 기능이 있는 경우
     if (onClick) {
@@ -19,7 +33,7 @@ function CategoryChip({
                 className={className}
                 onClick={onClick}
             >
-                {label ?? category.label}
+                {content}
             </button>
         );
     }
@@ -27,7 +41,7 @@ function CategoryChip({
     // 클릭 기능이 없는 경우
     return (
         <span className={className}>
-            {label ?? category.label}
+            {content}
         </span>
     );
 }

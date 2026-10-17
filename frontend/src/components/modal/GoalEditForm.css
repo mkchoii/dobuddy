@@ -66,3 +66,13 @@
 
     cursor: pointer;
 }
+
+.goal-edit-input.input-error {
+    border-color: #e05252;
+}
+
+.error-message {
+    margin: 2px 0 0 2px;
+    font-size: 11px;
+    color: #e05252;
+}

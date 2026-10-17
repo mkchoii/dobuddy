@@ -10,6 +10,8 @@ function TaskDetailModal({
     onDelete,
     onClose,
 }) {
+    const isTooLong = text.length > 20;
+
     return (
         <div className="task-detail-modal-overlay">
             <div className="task-detail-modal">
@@ -25,23 +27,34 @@ function TaskDetailModal({
                         className="task-detail-modal-close-icon"
                     />
                 </button>
+                <div className="task-detail-modal-content">
+                    <div className="task-detail-modal-input-area">
+                        <input
+                            type="text"
+                            className={`task-detail-modal-input ${isTooLong ? 'error' : ''}`}
+                            value={text}
+                            onChange={(e) => onChangeText(e.target.value)}
+                        />
 
-                <input
-                    type="text"
-                    className="task-detail-modal-input"
-                    value={text}
-                    onChange={(e) => onChangeText(e.target.value)}
-                />
+                        {isTooLong && (
+                            <p className="task-detail-modal-error">
+                                태스크는 20자 이내로 입력해주세요.
+                            </p>
+                        )}
+                    </div>
+                    
 
-                <div className="task-detail-modal-buttons">
-                    <SmallButton onClick={onEdit}>
-                        수정하기
-                    </SmallButton>
+                    <div className="task-detail-modal-buttons">
+                        <SmallButton onClick={onEdit} disabled={isTooLong}>
+                            수정하기
+                        </SmallButton>
 
-                    <SmallButton onClick={onDelete}>
-                        삭제하기
-                    </SmallButton>
+                        <SmallButton onClick={onDelete}>
+                            삭제하기
+                        </SmallButton>
+                    </div>
                 </div>
+                
             </div>
         </div>
     );

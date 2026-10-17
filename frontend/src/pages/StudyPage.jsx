@@ -6,6 +6,8 @@ import { getMyStudy } from '../api/studyApi';
 import StudyListPage from './StudyListPage';
 import StudyDashboardPage from './StudyDashboardPage';
 
+import './StudyDashboardPage.css';
+
 function StudyPage() {
     const [studyId, setStudyId] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -31,7 +33,7 @@ function StudyPage() {
     }
 
     if (errorMessage) {
-        return <p>{errorMessage}</p>;
+        return <div className="study-dashboard-message study-page-message">{errorMessage}</div>;
     }
 
     return (

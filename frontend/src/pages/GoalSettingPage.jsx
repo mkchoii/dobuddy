@@ -61,7 +61,7 @@ function GoalSettingPage() {
 
     const errorMessage =
         goalNameError === 'max_length'
-            ? '최대 10자 입력만 가능합니다'
+            ? '세부목표명은 10자 이내로 입력해주세요.'
             : '';
 
     return (
@@ -73,7 +73,7 @@ function GoalSettingPage() {
                 </h1>
 
                 <p className="goal-setting-description">
-                    나는 이런 목표를 달성하고 싶어요
+                    달성하고 싶은 세부목표를 설정해주세요.
                 </p>
 
                 <div className="goal-category-area">

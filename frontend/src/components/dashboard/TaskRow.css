@@ -53,8 +53,14 @@
     color: #ACACAC;
 }
 
+.new-task-input-area {
+    flex: 1;
+    min-width: 0;
+}
+
 .new-task-input {
     flex: 1;
+    width: 100%;
     min-width: 0;
     padding: 0;
 

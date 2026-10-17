@@ -4,6 +4,7 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
+    gap: 5px;
 
     padding: 4px 6px;
 
@@ -16,6 +17,18 @@
     line-height: 18px;
 
     white-space: nowrap;
+}
+
+.category-chip-link-icon {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+
+    background-color: currentColor;
+
+    -webkit-mask: url('../assets/icons/link.svg') center / contain no-repeat;
+    mask: url('../assets/icons/link.svg') center / contain no-repeat;
 }
 
 button.category-chip {

@@ -105,6 +105,7 @@ function GoalGroupedTaskList({
                             label: goal.category,
                         }}
                         label={goal.goalName}
+                        isLinked={goal.isLinked}
                     />
 
                     <button

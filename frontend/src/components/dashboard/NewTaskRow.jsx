@@ -34,17 +34,21 @@ function NewTaskRow({ onCreate, onCancel }) {
                 />
             </div>
 
-            <input
-                type="text"
-                className="new-task-input"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                onKeyDown={handleKeyDown}
-                onBlur={handleSubmit}
-                placeholder="태스크를 입력해주세요"
-                enterKeyHint='done'
-                autoFocus
-            />
+            <div className="new-task-input-area">
+                <input
+                    type="text"
+                    className="new-task-input"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    onBlur={handleSubmit}
+                    placeholder="태스크를 입력해주세요 (20자 이내)"
+                    maxLength={20}
+                    enterKeyHint='done'
+                    autoFocus
+                />
+            </div>
+            
         </div>
     );
 }

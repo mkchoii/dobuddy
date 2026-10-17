@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { CATEGORIES } from '../../categories';
 import CategoryChip from '../CategoryChip';
 import './GoalEditForm.css';
+import SmallButton from '../common/SmallButton';
+import GoalLinkedWarningModal from './GoalLinkedWarningModal';
 
 function GoalEditForm({
     mode = 'edit',
@@ -13,15 +15,24 @@ function GoalEditForm({
     const [goalName, setGoalName] = useState(
         goal?.goalName ?? ''
     );
+    const isTooLong = goalName.length > 10;
 
+    const errorMessage = isTooLong ? '세부목표명은 10자 이내로 입력해주세요.' : '';
     const [category, setCategory] = useState(
         goal?.category ?? null
     );
 
+    const [isWarningOpen, setIsWarningOpen] = useState(false);
+
     const handleSubmit = async () => {
         const trimmedGoalName = goalName.trim();
 
-        if (!trimmedGoalName || !category) {
+        if (!trimmedGoalName || !category || isTooLong) {
+            return;
+        }
+
+        if (mode === 'edit' && goal?.isLinked && category !== goal.category) {
+            setIsWarningOpen(true);
             return;
         }
 
@@ -61,22 +72,34 @@ function GoalEditForm({
             <div className="goal-edit-input-row">
                 <input
                     type="text"
-                    className="goal-edit-input"
+                    className={`goal-edit-input ${isTooLong ? 'input-error' : ''}`}
                     value={goalName}
                     onChange={(e) => setGoalName(e.target.value)}
                     placeholder='세부목표를 입력해주세요.'
                 />
 
-                <button
-                    type="button"
+                <SmallButton
                     className="goal-edit-submit"
                     onClick={handleSubmit}
+                    disabled={!goalName.trim() || !category || isTooLong}
                 >
                     {mode === 'add'
                         ? '확인'
                         : '변경하기'}
-                </button>
+                </SmallButton>
             </div>
+            {errorMessage && (
+                <p className="error-message">
+                    {errorMessage}
+                </p>
+            )}
+
+            {isWarningOpen && (
+                <GoalLinkedWarningModal 
+                message="스터디에 연동된 세부목표는 카테고리를 변경할 수 없습니다." 
+                onClose={() => setIsWarningOpen(false)}
+                />
+            )}
         </div>
     );
 }

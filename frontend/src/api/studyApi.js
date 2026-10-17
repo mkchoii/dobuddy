@@ -230,3 +230,22 @@ export async function deleteStudy(studyId) {
         throw new Error('스터디 삭제에 실패했습니다.');
     }
 }
+
+export async function updateStudyGoal(studyId, goalIds) {
+    const response = await fetch(`${API_BASE_URL}/studies/${studyId}/goals`,
+        {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                goalIds
+            })
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error('연동 세부목표 수정에 실패했습니다.');
+    }
+}

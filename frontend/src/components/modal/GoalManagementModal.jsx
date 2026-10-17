@@ -9,6 +9,7 @@ import closeIcon from '../../assets/icons/close.svg';
 import addIcon from '../../assets/icons/add.svg';
 import editIcon from '../../assets/icons/edit.svg';
 import trashIcon from '../../assets/icons/trash.svg';
+import GoalLinkedWarningModal from './GoalLinkedWarningModal';
 
 function GoalManagementModal({
     goals = [],
@@ -21,6 +22,7 @@ function GoalManagementModal({
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [isAddingGoal, setIsAddingGoal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [warningMessage, setWarningMessage] = useState('');
 
     return (
         <div className="goal-management-overlay">
@@ -92,6 +94,7 @@ function GoalManagementModal({
                                     <CategoryChip
                                         category={categoryObject}
                                         label={goal.goalName}
+                                        isLinked={goal.isLinked}
                                     />
 
                                     <div className="goal-management-actions">
@@ -109,6 +112,12 @@ function GoalManagementModal({
                                         <button
                                             type="button"
                                             onClick={() => {
+                                                if (goal.isLinked) {
+                                                    setWarningMessage(
+                                                        '스터디에 연동된 세부목표는 삭제할 수 없습니다.'
+                                                    );
+                                                    return;
+                                                }
                                                 if (goals.length <= 1) {
                                                     setErrorMessage(
                                                         '세부목표는 최소 1개 이상 존재해야 합니다.'
@@ -144,6 +153,13 @@ function GoalManagementModal({
                                                 setErrorMessage('');
                                             }
                                         }}
+                                    />
+                                )}
+
+                                {warningMessage && (
+                                    <GoalLinkedWarningModal 
+                                    message={warningMessage} 
+                                    onClose={() => setWarningMessage('')}
                                     />
                                 )}
                             </div>

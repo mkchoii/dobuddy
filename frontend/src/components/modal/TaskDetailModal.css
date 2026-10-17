@@ -43,14 +43,26 @@
     height: 15px;
 }
 
+.task-detail-modal-content {
+    position: absolute;
+    top: 61px;
+    left: 73px;
+    width: 235px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 13px;
+}
+
+.task-detail-modal-input-area {
+    width: 100%;
+}
+
 .task-detail-modal-input {
     box-sizing: border-box;
-
-    position: absolute;
-    width: 235px;
+    width: 100%;
     height: 30px;
-    left: 73px;
-    top: 61px;
 
     padding: 0 11px;
 
@@ -64,16 +76,27 @@
     line-height: 13px;
     letter-spacing: 0.04em;
 
-    color: #ACACAC;
-
+    color: #000000;
     outline: none;
 }
 
-.task-detail-modal-buttons {
-    position: absolute;
-    top: 104px;
-    left: 104px;
+.task-detail-modal-input::placeholder {
+    color: #acacac;
+}
 
+.task-detail-modal-input.error {
+    border-color: #e57779;
+}
+
+.task-detail-modal-error {
+    margin: 4px 0 0;
+    font-size: 11px;
+    line-height: 14px;
+    color: #e57779;
+    text-align: left;
+}
+
+.task-detail-modal-buttons {
     display: flex;
     gap: 32px;
 }
