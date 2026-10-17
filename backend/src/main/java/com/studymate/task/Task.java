@@ -2,6 +2,8 @@ package com.studymate.task;
 
 import com.studymate.goal.Goal;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,6 +25,8 @@ public class Task {
     private Goal goal;
 
     @Column(nullable = false)
+    @NotBlank(message = "태스크 내용을 입력해주세요.")
+    @Size(max = 20, message = "태스크는 20자 이내로 입력해주세요.")
     private String content;
 
     @Column(nullable = false)

@@ -1,5 +1,6 @@
 package com.studymate.dashboard.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.studymate.goal.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,5 +14,9 @@ public class DashboardGoalResponse {
     private Integer goalId;
     private String goalName;
     private Category category;
+
+    @JsonProperty("isLinked")
+    private boolean linked;
+
     private List<DashboardTaskResponse> tasks;
 }

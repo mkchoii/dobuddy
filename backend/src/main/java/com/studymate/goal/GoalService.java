@@ -96,7 +96,7 @@ public class GoalService {
                         "목표를 찾을 수 없습니다."
                 ));
 
-        if (request.getCategory() != null) {
+        if (request.getCategory() != null && !request.getCategory().equals(goal.getCategory())) {
             if (studyMemberGoalRepository.existsByGoalId(goalId)) {
                 throw new BusinessException(
                         HttpStatus.CONFLICT,

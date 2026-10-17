@@ -5,6 +5,8 @@ import com.studymate.ProgressService;
 import com.studymate.dashboard.dto.*;
 import com.studymate.goal.Goal;
 import com.studymate.goal.GoalRepository;
+import com.studymate.study.StudyMemberGoal;
+import com.studymate.study.StudyMemberGoalRepository;
 import com.studymate.task.Task;
 import com.studymate.task.TaskRepository;
 import com.studymate.task.dto.ProgressResponse;
@@ -26,6 +28,7 @@ public class DashboardService {
     private final UserRepository userRepository;
     private final GoalRepository goalRepository;
     private final TaskRepository taskRepository;
+    private final StudyMemberGoalRepository studyMemberGoalRepository;
 
     public DashboardResponse getDashboard(Integer userId, LocalDate date) {
 
@@ -47,6 +50,7 @@ public class DashboardService {
 
         List<DashboardGoalResponse> dashboardGoals = goals.stream()
                 .map(goal -> {
+                        boolean isLinked = studyMemberGoalRepository.existsByGoalId(goal.getId());
                         List<DashboardTaskResponse> tasks = dailyTasks.stream()
                                 .filter(task ->
                                         task.getGoal().getId().equals(goal.getId())
@@ -63,6 +67,7 @@ public class DashboardService {
                                 goal.getId(),
                                 goal.getGoalName(),
                                 goal.getCategory(),
+                                isLinked,
                                 tasks
                         );
                 })

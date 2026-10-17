@@ -120,7 +120,7 @@ public class StudyController {
     }
 
     @PatchMapping("/{studyId}/goals")
-    public ResponseEntity<Void> updateStudyGoal(@PathVariable Integer studyId, @RequestBody StudyGoalUpdateRequest request, Authentication authentication) {
+    public ResponseEntity<Void> updateStudyGoal(@PathVariable Integer studyId, @Valid @RequestBody StudyGoalUpdateRequest request, Authentication authentication) {
 
         Integer userId = (Integer) authentication.getPrincipal();
 

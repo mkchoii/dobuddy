@@ -2,6 +2,8 @@ package com.studymate.goal;
 
 import com.studymate.user.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,6 +29,8 @@ public class Goal {
     private Category category;
 
     @Column(nullable = false)
+    @NotBlank(message = "세부목표명을 입력해주세요.")
+    @Size(max = 10, message = "세부목표명은 10자 이내로 입력해주세요.")
     private String goalName;
 
     @Column(nullable = false, updatable = false)

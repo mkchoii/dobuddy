@@ -9,4 +9,5 @@ public class MatchingGoalResponse {
 
     private Integer goalId;
     private String goalName;
+    private Boolean isLinked;
 }

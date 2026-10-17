@@ -18,6 +18,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -164,11 +165,23 @@ public class StudyService {
 
         List<Goal> matchingGoals = goalRepository.findAllByUserIdAndCategory(userId, study.getCategory());
 
+        // 현재 스터디에 연동된 세부목표 ID 조회
+        Set<Integer> linkedGoalIds = studyMemberRepository
+                .findByStudyIdAndUserId(studyId, userId)
+                .map(studyMember -> studyMemberGoalRepository
+                        .findAllByStudyMemberId(studyMember.getId())
+                        .stream()
+                        .map(studyMemberGoal -> studyMemberGoal.getGoal().getId())
+                        .collect(Collectors.toSet())
+                )
+                .orElseGet(Collections::emptySet);
+
         List<MatchingGoalResponse> goalResponses = matchingGoals.stream()
                 .map(goal -> {
                     return new MatchingGoalResponse(
                             goal.getId(),
-                            goal.getGoalName()
+                            goal.getGoalName(),
+                            linkedGoalIds.contains(goal.getId())
                     );
                 })
                 .toList();

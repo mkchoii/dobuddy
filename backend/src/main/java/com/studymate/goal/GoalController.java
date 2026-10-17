@@ -38,7 +38,7 @@ public class GoalController {
     }
 
     @PatchMapping("/{goalId}")
-    public ResponseEntity<GoalResponse> updateGoal(@PathVariable Integer goalId, @RequestBody GoalUpdateRequest request, Authentication authentication) {
+    public ResponseEntity<GoalResponse> updateGoal(@PathVariable Integer goalId, @Valid @RequestBody GoalUpdateRequest request, Authentication authentication) {
 
         Integer userId = (Integer) authentication.getPrincipal();
 
