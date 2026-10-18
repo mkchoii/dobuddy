@@ -3,6 +3,7 @@ package com.studymate.auth;
 import com.studymate.auth.dto.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
@@ -57,6 +58,9 @@ public class AuthController {
                 httpRequest,
                 httpResponse
         );
+
+        HttpSession session = httpRequest.getSession();
+        session.setAttribute("isSignupSession", true);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

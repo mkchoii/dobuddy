@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -39,6 +40,9 @@ public class User {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column
+    private LocalDateTime accessAt;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
@@ -62,4 +66,5 @@ public class User {
     public void updateProfileImage(Integer profileImageId) { this.profileImageId = profileImageId; }
 
     public void updatePassword(String password) { this.password = password; }
+    public void updateAccessAt(LocalDateTime accessAt) { this.accessAt = accessAt; }
 }

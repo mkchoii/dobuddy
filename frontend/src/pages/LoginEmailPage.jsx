@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { trackEvent } from '../amplitude';
 
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
@@ -12,6 +13,7 @@ function LoginEmailPage() {
     const [errorState, setErrorState] = useState('none');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const emailAttemptCount = useRef(0);
 
     const handleEmailChange = (event) => {
         const value = event.target.value;
@@ -27,6 +29,7 @@ function LoginEmailPage() {
 
     const handleSubmit = async () => {
         if (isLoading) return;
+        emailAttemptCount.current += 1;
 
         if (email.length > 30) {
             setErrorState('too_long');
@@ -37,6 +40,12 @@ function LoginEmailPage() {
 
         if (!emailRegex.test(email)) {
             setErrorState('invalid_format');
+
+            trackEvent('Email_Failed', {
+                email_attempt_count: emailAttemptCount.current,
+                fail_reason: 'email_format_invalid'
+            });
+
             return;
         }
 
@@ -45,20 +54,26 @@ function LoginEmailPage() {
 
             const data = await checkEmail(email);
 
-            if (data.next === 'LOGIN') {
-                navigate('/login/password', {
-                    state: { email: email }
+            if (data.next === 'LOGIN' || data.next === 'SIGNUP') {
+                trackEvent('Email_Succeeded', {
+                    email_attempt_count: emailAttemptCount.current
                 });
-            }
 
-            if (data.next === 'SIGNUP') {
-                navigate('/signup/password', {
-                    state: { email: email }
-                });
+                navigate(
+                    data.next === 'LOGIN' 
+                    ? '/login/password' 
+                    : '/signup/password', 
+                    { state : { email: email } }
+                );
             }
 
             if (data.next === 'NOT_INVITED') {
                 setErrorState('not_registered');
+
+                trackEvent('Email_Failed', {
+                    email_attempt_count: emailAttemptCount.current,
+                    fail_reason: 'email_not_registered'
+                });
             }
 
         } catch (error) {

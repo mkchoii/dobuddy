@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { saveChannel } from './amplitude';
 import LoginEmailPage from './pages/LoginEmailPage';
 import PasswordSetupPage from './pages/PasswordSetupPage';
 import PasswordLoginPage from './pages/PasswordLoginPage';
@@ -14,6 +16,10 @@ import AdminStudyManagePage from './pages/AdminStudyManagePage';
 import AdminStudyCreatePage from './pages/AdminStudyCreatePage';
 
 function App() {
+    useEffect(() => {
+        saveChannel();
+    }, []);
+    
     return (
         <BrowserRouter>
             <Routes>

@@ -22,6 +22,7 @@ import {
 } from '../api/dashboardApi';
 
 import './DashboardPage.css';
+import { trackGoalCreated } from '../amplitude';
 
 function DashboardPage() {
     const [dashboard, setDashboard] = useState(null);
@@ -241,10 +242,14 @@ function DashboardPage() {
     // 세부 목표 생성
     const handleCreateGoal = async (category, goalName) => {
         try {
-            const createdGoal = await createGoal(
-                category,
-                goalName
-            );
+            const createdGoal = await createGoal(category,goalName);
+
+            const goalCategories = [
+                ...dashboard.goals.map(goal => goal.category),
+                createdGoal.category
+            ];
+
+            trackGoalCreated(createdGoal, goalCategories);
 
             setDashboard((prev) => ({
                 ...prev,

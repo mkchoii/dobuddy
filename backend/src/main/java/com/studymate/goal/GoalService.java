@@ -8,11 +8,13 @@ import com.studymate.study.StudyMemberRepository;
 import com.studymate.task.TaskRepository;
 import com.studymate.user.User;
 import com.studymate.user.UserRepository;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
 
 @Service
@@ -25,7 +27,7 @@ public class GoalService {
     private final StudyMemberGoalRepository studyMemberGoalRepository;
 
     @Transactional
-    public GoalResponse createGoal(Integer userId, GoalCreateRequest request) {
+    public GoalCreateResponse createGoal(Integer userId, GoalCreateRequest request, HttpSession session) {
 
         long goalCount = goalRepository.countByUserId(userId);
 
@@ -42,6 +44,10 @@ public class GoalService {
                         "사용자를 찾을 수 없습니다."
                 ));
 
+        boolean isFirstGoal = !goalRepository.existsByUserId(userId);
+
+        boolean isSignupSession = Boolean.TRUE.equals(session.getAttribute("isSignupSession"));
+
         Goal goal = new Goal(
                 request.getCategory(),
                 request.getGoalName(),
@@ -50,11 +56,20 @@ public class GoalService {
 
         Goal savedGoal = goalRepository.save(goal);
 
-        return new GoalResponse(
+        long signupMinuteCount = Math.max(0, Duration.between(
+                user.getCreatedAt(),
+                savedGoal.getCreatedAt()
+            ).toMinutes()
+        );
+
+        return new GoalCreateResponse(
                 savedGoal.getId(),
                 savedGoal.getCategory(),
                 savedGoal.getGoalName(),
-                savedGoal.getCreatedAt()
+                savedGoal.getCreatedAt(),
+                isFirstGoal,
+                isSignupSession,
+                signupMinuteCount
         );
     }
 

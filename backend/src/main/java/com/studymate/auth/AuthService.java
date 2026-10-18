@@ -7,11 +7,15 @@ import com.studymate.goal.GoalRepository;
 import com.studymate.invite.InviteRepository;
 import com.studymate.user.User;
 import com.studymate.user.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.security.SecureRandom;
 
@@ -26,6 +30,7 @@ public class AuthService {
 
     private final SecureRandom secureRandom = new SecureRandom();
     private final EmailService emailService;
+    private final PasswordResetCountLimiter passwordResetCountLimiter;
 
     private static final List<String> ADJECTIVES = List.of(
             "배고픈",
@@ -93,12 +98,14 @@ public class AuthService {
                 profileImageId
         );
 
+        user.updateAccessAt(LocalDateTime.now());
         User savedUser = userRepository.save(user);
 
         return new SignupResponse(
                 savedUser.getId(),
                 savedUser.getEmail(),
-                savedUser.getNickname()
+                savedUser.getNickname(),
+                savedUser.getCreatedAt()
         );
     }
 
@@ -126,31 +133,70 @@ public class AuthService {
                 );
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new BusinessException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다.");
+            throw new BusinessException(
+                    HttpStatus.UNAUTHORIZED,
+                    "PASSWORD_MISMATCH",
+                    "이메일 또는 비밀번호가 올바르지 않습니다."
+            );
         }
+
+        boolean isFirstLogin = user.getAccessAt() == null;
+        user.updateAccessAt(LocalDateTime.now());
+        userRepository.save(user);
 
         boolean hasGoal = goalRepository.existsByUserId(user.getId());
 
-        return new LoginResponse(user.getId(), user.getRole(), hasGoal);
+        return new LoginResponse(
+                user.getId(),
+                user.getRole(),
+                hasGoal,
+                isFirstLogin
+        );
     }
 
+    @Transactional
     public void resetPassword(EmailCheckRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new BusinessException(
                         HttpStatus.UNAUTHORIZED,
-                        "이메일이 올바르지 않습니다.")
+                        "DB_FAILED",
+                        "사용자 정보 조회에 실패했습니다.")
                 );
 
-        if (user == null) {
-            return;
+        // 하루 5회 요청 제한
+        if (!passwordResetCountLimiter.tryAcquire(user.getEmail())) {
+            throw new BusinessException(
+                    HttpStatus.TOO_MANY_REQUESTS,
+                    "DAILY_LIMIT",
+                    "비밀번호 재설정은 하루 최대 5회까지 가능합니다."
+            );
         }
 
         // 임시 비밀번호 생성
         String tempPassword = String.format("%04d", secureRandom.nextInt(10000));
-        emailService.sendTemporaryPassword(request.getEmail(), tempPassword);
 
-        user.updatePassword(passwordEncoder.encode(tempPassword));
-        userRepository.save(user);
+        // 이메일 발송
+        try {
+            emailService.sendTemporaryPassword(request.getEmail(), tempPassword);
+        } catch (MailException e) {
+            throw new BusinessException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "MAIL_FAILED",
+                    "임시 비밀번호 메일 발송에 실패했습니다."
+            );
+        }
+
+        // 기존 비밀번호 변경
+        try {
+            user.updatePassword(passwordEncoder.encode(tempPassword));
+            userRepository.saveAndFlush(user);
+        } catch (DataAccessException e) {
+            throw new BusinessException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "DB_FAILED",
+                    "비밀번호 재설정에 실패했습니다."
+            );
+        }
     }
 }

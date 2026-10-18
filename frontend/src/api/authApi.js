@@ -60,7 +60,11 @@ export async function login(email, password) {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message);
+        const error = new Error(data.message);
+        error.code = data.code;
+        error.status = response.status;
+
+        throw error;
     }
 
     return data;
@@ -87,6 +91,11 @@ export async function resetPassword(email) {
     });
 
     if (!response.ok) {
-        throw new Error('비밀번호 초기화에 실패했습니다.');
+        const data = await response.json();
+
+        const error = new Error(data.message);
+        error.code = data.code;
+
+        throw error;
     }
 }

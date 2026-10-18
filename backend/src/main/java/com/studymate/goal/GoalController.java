@@ -1,6 +1,7 @@
 package com.studymate.goal;
 
 import com.studymate.goal.dto.*;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,11 +17,11 @@ public class GoalController {
     private final GoalService goalService;
 
     @PostMapping
-    public ResponseEntity<GoalResponse> createGoal(@Valid @RequestBody GoalCreateRequest request, Authentication authentication) {
+    public ResponseEntity<GoalCreateResponse> createGoal(@Valid @RequestBody GoalCreateRequest request, Authentication authentication, HttpSession session) {
 
         Integer userId = (Integer) authentication.getPrincipal();
 
-        GoalResponse response = goalService.createGoal(userId, request);
+        GoalCreateResponse response = goalService.createGoal(userId, request, session);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

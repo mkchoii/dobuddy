@@ -10,6 +10,7 @@ import { createGoal } from '../api/goalApi';
 
 import './GoalSettingPage.css';
 import './AuthPage.css';
+import { trackGoalCreated } from '../amplitude';
 
 function GoalSettingPage() {
     const navigate = useNavigate();
@@ -43,7 +44,9 @@ function GoalSettingPage() {
 
     const handleComplete = async () => {
         try {
-            await createGoal(category, goalName);
+            const data = await createGoal(category, goalName);
+
+            trackGoalCreated(data, [data.category]);
 
             navigate('/signup-complete', {
                 state: {

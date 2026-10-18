@@ -27,7 +27,7 @@ function NavigationBar() {
             <NavLink
                 to="/mypage"
                 className={({ isActive }) =>
-                    `navigation-item ${isActive ? 'active' : ''}`
+                    `navigation-item ${isActive || window.location.pathname === '/password-change' ? 'active' : ''}`
                 }
             >
                 마이페이지
