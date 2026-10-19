@@ -75,4 +75,5 @@ export async function deleteGoal(goalId) {
 
         throw new Error(message);
     }
+    return await response.json();
 }

@@ -22,7 +22,7 @@ import {
 } from '../api/dashboardApi';
 
 import './DashboardPage.css';
-import { trackGoalCreated } from '../amplitude';
+import { trackGoalCreated, trackGoalDeleted, trackGoalSummaryCardViewed, trackGoalUpdated, trackTaskCompleted, trackTaskCompletedCanceled, trackTaskCreated, trackTaskDeleted, trackTaskUpdated } from '../amplitude';
 
 function DashboardPage() {
     const [dashboard, setDashboard] = useState(null);
@@ -54,6 +54,8 @@ function DashboardPage() {
     // 상단 카드 더보기
     const handleClickMore = () => {
         if (topCardMode === 'finalGoal') {
+            trackGoalSummaryCardViewed();
+            
             const goals = dashboard.goalProgress;
 
             if (goals.length > 0) {
@@ -118,6 +120,12 @@ function DashboardPage() {
                 !isCompleted
             );
 
+            if (data.isNewlyCompleted) {
+                trackTaskCompleted(data);
+            } else if (data.isNewlyCanceled) {
+                trackTaskCompletedCanceled(data);
+            }
+
             setDashboard((prev) => ({
                 ...prev,
 
@@ -145,8 +153,18 @@ function DashboardPage() {
 
     // 태스크 수정
     const handleEditTask = async (taskId, content) => {
+        const originalTask = dashboard.goals
+            .flatMap(goal => goal.tasks)
+            .find(task => task.taskId === taskId);
+
+        if (originalTask && content === originalTask.content) {
+            return true; 
+        }
+
         try {
             const data = await updateTask(taskId, content);
+
+            trackTaskUpdated(data);
 
             setDashboard((prev) => ({
                 ...prev,
@@ -174,6 +192,8 @@ function DashboardPage() {
     const handleDeleteTask = async (taskId) => {
         try {
             const data = await deleteTask(taskId);
+
+            trackTaskDeleted(data);
 
             setDashboard((prev) => ({
                 ...prev,
@@ -210,6 +230,8 @@ function DashboardPage() {
                 taskDate,
                 content
             );
+
+            trackTaskCreated(data);
 
             setDashboard((prev) => ({
                 ...prev,
@@ -287,10 +309,19 @@ function DashboardPage() {
         goalName
     ) => {
         try {
-            const updatedGoal = await updateGoal(goalId, {
+            const updatedGoal = await updateGoal(
+                goalId, {
                 category,
                 goalName,
             });
+
+            const goalCategories = dashboard.goals.map(goal => 
+                goal.goalId === goalId 
+                ? updatedGoal.category
+                : goal.category
+            );
+
+            trackGoalUpdated(updatedGoal, goalCategories);
 
             setDashboard((prev) => ({
                 ...prev,
@@ -326,7 +357,13 @@ function DashboardPage() {
     // 세부 목표 삭제
     const handleDeleteGoal = async (goalId) => {
         try {
-            await deleteGoal(goalId);
+            const data = await deleteGoal(goalId);
+
+            const remainingGoals = dashboard.goals.filter(
+                goal => goal.goalId !== goalId
+            );
+
+            trackGoalDeleted(data, remainingGoals.map(goal => goal.category));
 
             setDashboard((prev) => ({
                 ...prev,
