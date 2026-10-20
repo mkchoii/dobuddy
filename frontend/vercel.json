@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://studymate-api-858c.onrender.com/:path*"
+      "destination": "https://dobuddy-3rdp.onrender.com/:path*"
     },
     {
       "source": "/(.*)",
