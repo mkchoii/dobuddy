@@ -32,7 +32,18 @@ function StudyListPage({ isJoined, onJoined }) {
 
                 const data = await getStudies(selectedCategory);
 
-                setStudies(data.studies);
+                const sortedStudies = [...data.studies].sort((a, b) => {
+                    const aAvailable = a.currentMembers < a.maxMembers;
+                    const bAvailable = b.currentMembers < b.maxMembers;
+
+                    if (aAvailable !== bAvailable) {
+                        return aAvailable ? -1 : 1;
+                    }
+
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                });
+
+                setStudies(sortedStudies);
             } catch (error) {
                 console.error(error);
             } finally {

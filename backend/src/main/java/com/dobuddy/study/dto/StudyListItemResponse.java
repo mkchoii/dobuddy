@@ -4,6 +4,8 @@ import com.dobuddy.goal.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @AllArgsConstructor
 public class StudyListItemResponse {
@@ -14,4 +16,5 @@ public class StudyListItemResponse {
     private long currentMembers;
     private Integer maxMembers;
     private boolean canJoin;
+    private LocalDateTime createdAt;
 }

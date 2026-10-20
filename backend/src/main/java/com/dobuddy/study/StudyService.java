@@ -156,7 +156,8 @@ public class StudyService {
                             study.getCategory(),
                             currentMembers,
                             study.getMaxMembers(),
-                            canJoin
+                            canJoin,
+                            study.getCreatedAt()
                     );
                 })
                 .toList();
