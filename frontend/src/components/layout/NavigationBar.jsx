@@ -20,6 +20,12 @@ function NavigationBar() {
                 className={({ isActive }) =>
                     `navigation-item ${isActive ? 'active' : ''}`
                 }
+                onClick={(event) => {
+                    if (window.location.pathname === '/study') {
+                        event.preventDefault();
+                        window.location.reload();
+                    }
+                }}
             >
                 팀 스페이스
             </NavLink>
