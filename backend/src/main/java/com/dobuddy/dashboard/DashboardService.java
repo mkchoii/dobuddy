@@ -37,7 +37,8 @@ public class DashboardService {
                         "사용자를 찾을 수 없습니다."
                 ));
 
-        List<Goal> goals = goalRepository.findAllByUserId(userId);
+        // 세부목표를 생성일 기준 오래된 순으로 조회
+        List<Goal> goals = goalRepository.findAllByUserIdOrderByCreatedAtAsc(userId);
 
         ProgressResponse progress = progressService.getProgress(userId);
 

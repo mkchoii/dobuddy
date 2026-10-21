@@ -24,4 +24,7 @@ public interface StudyMemberGoalRepository extends JpaRepository<StudyMemberGoal
     void deleteAllByUserId(@Param("userId") Integer userId);
     boolean existsByGoalId(Integer goalId);
     StudyMemberGoal findByGoalId(Integer goalId);
+    List<StudyMemberGoal> findAllByStudyMemberIdOrderByGoal_CreatedAtAsc(
+            Integer studyMemberId
+    );
 }

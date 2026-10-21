@@ -31,6 +31,7 @@ function DashboardPage() {
     const [isGoalManagementOpen, setIsGoalManagementOpen] = useState(false);
     const [finalGoalInput, setFinalGoalInput] = useState('');
     const [selectedGoalId, setSelectedGoalId] = useState(null);
+    const [error, setError] = useState(null);
 
     // 대시보드 조회 및 날짜 선택
     const loadDashboard = async (date) => {
@@ -38,7 +39,13 @@ function DashboardPage() {
             const data = await getDashboard(date);
             setDashboard(data);
         } catch (error) {
+            if (error.message === 'SESSION_EXPIRED') {
+                alert('세션이 만료되었습니다. 다시 시도해주세요.');
+                window.location.replace('/login');
+                return;
+            }
             console.error(error);
+            setError('대시보드를 불러오지 못했습니다.');
         }
     };
 
@@ -383,6 +390,10 @@ function DashboardPage() {
             return false;
         }
     };
+
+    if (error) {
+        return <div claassName="dashboard-error">{error}</div>;
+    }
 
     if (!dashboard) {
         return <div className="dashboard-loading">대시보드를 불러오는 중입니다...</div>;

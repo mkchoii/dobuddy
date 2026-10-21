@@ -371,13 +371,21 @@ public class StudyService {
         LocalDate weekEnd =
                 today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
-        List<StudyMemberGoal> memberGoals = studyMemberGoalRepository.findAllByStudyMemberId(studyMemberId);
+        List<StudyMemberGoal> memberGoals =
+                studyMemberGoalRepository.findAllByStudyMemberIdOrderByGoal_CreatedAtAsc(
+                        studyMemberId
+                );
 
         List<StudyMemberGoalResponse> goalResponses = memberGoals.stream()
                 .map(memberGoal -> {
                     Goal goal = memberGoal.getGoal();
 
-                    List<Task> tasks = taskRepository.findAllByGoalIdAndTaskDateBetween(goal.getId(), weekStart, weekEnd);
+                    List<Task> tasks =
+                            taskRepository.findAllByGoalIdAndTaskDateBetweenOrderByIsCompletedAscCreatedAtAsc(
+                                    goal.getId(),
+                                    weekStart,
+                                    weekEnd
+                            );
                     List<StudyMemberTaskResponse> taskResponses = tasks.stream()
                             .map(task -> new StudyMemberTaskResponse(
                                     task.getId(),

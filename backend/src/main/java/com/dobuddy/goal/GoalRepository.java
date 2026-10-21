@@ -13,5 +13,6 @@ public interface GoalRepository extends JpaRepository<Goal, Integer> {
     boolean existsByUserId(Integer userId);
     void deleteAllByUserId(Integer userId);
     long countByUserId(Integer userId);
+    List<Goal> findAllByUserIdOrderByCreatedAtAsc(Integer userId);
 
 }

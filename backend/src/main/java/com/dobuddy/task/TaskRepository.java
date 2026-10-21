@@ -35,4 +35,9 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
     long countByGoalId(Integer goalId);
     long countByGoalIdAndIsCompletedTrue(Integer goalId);
     boolean existsByGoalUserId(Integer userId);
+    List<Task> findAllByGoalIdAndTaskDateBetweenOrderByIsCompletedAscCreatedAtAsc(
+            Integer goalId,
+            LocalDate weekStart,
+            LocalDate weekEnd
+    );
 }
