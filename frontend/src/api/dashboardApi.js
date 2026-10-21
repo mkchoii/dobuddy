@@ -10,6 +10,11 @@ export async function getDashboard(date) {
         credentials: 'include',
     });
 
+    // 세션 만료
+    if (response.status === 401) {
+        throw new Error('SESSION_EXPIRED');
+    }
+
     if (!response.ok) {
         let message = '대시보드를 불러오지 못했습니다.';
 
