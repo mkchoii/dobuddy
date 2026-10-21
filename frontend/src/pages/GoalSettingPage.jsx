@@ -11,6 +11,7 @@ import { createGoal } from '../api/goalApi';
 import './GoalSettingPage.css';
 import './AuthPage.css';
 import { trackGoalCreated } from '../amplitude';
+import { handleApiError } from '../handleApiError';
 
 function GoalSettingPage() {
     const navigate = useNavigate();
@@ -54,6 +55,7 @@ function GoalSettingPage() {
                 },
             });
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
         }
     };

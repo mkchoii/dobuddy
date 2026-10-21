@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import Button from '../components/common/Button';
 import { getMe } from '../api/userApi';
+import { handleApiError } from '../handleApiError';
 
 import './SignupCompletePage.css';
 import './AuthPage.css';
@@ -18,6 +19,7 @@ function SignupCompletePage() {
                 const data = await getMe();
                 setNickname(data.nickname);
             } catch (error) {
+                if (handleApiError(error)) return;
                 console.error(error);
             }
         };

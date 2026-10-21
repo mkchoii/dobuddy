@@ -1,3 +1,5 @@
+import { apiFetch } from "./apiFetch";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export async function getDashboard(date) {
@@ -5,15 +7,9 @@ export async function getDashboard(date) {
         ? `${API_BASE_URL}/dashboard?date=${date}`
         : `${API_BASE_URL}/dashboard`;
 
-    const response = await fetch(url, {
+    const response = await apiFetch(url, {
         method: 'GET',
-        credentials: 'include',
     });
-
-    // 세션 만료
-    if (response.status === 401) {
-        throw new Error('SESSION_EXPIRED');
-    }
 
     if (!response.ok) {
         let message = '대시보드를 불러오지 못했습니다.';
@@ -42,14 +38,13 @@ export async function getDashboard(date) {
 }
 
 export async function updateTaskCompletion(taskId, isCompleted) {
-    const response = await fetch(
+    const response = await apiFetch(
         `${API_BASE_URL}/tasks/${taskId}/completion`,
         {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
-            credentials: 'include',
             body: JSON.stringify({
                 isCompleted,
             }),
@@ -77,14 +72,13 @@ export async function updateTaskCompletion(taskId, isCompleted) {
 }
 
 export async function updateTask(taskId, content) {
-    const response = await fetch(
+    const response = await apiFetch(
         `${API_BASE_URL}/tasks/${taskId}`,
         {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
-            credentials: 'include',
             body: JSON.stringify({
                 content,
             }),
@@ -108,11 +102,10 @@ export async function updateTask(taskId, content) {
 }
 
 export async function deleteTask(taskId) {
-    const response = await fetch(
+    const response = await apiFetch(
         `${API_BASE_URL}/tasks/${taskId}`,
         {
             method: 'DELETE',
-            credentials: 'include',
         }
     );
 
@@ -133,14 +126,13 @@ export async function deleteTask(taskId) {
 }
 
 export async function createTask(goalId, taskDate, content) {
-    const response = await fetch(
+    const response = await apiFetch(
         `${API_BASE_URL}/tasks`,
         {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            credentials: 'include',
             body: JSON.stringify({
                 goalId,
                 taskDate,

@@ -8,6 +8,7 @@ import { getMe, updateProfileImage, deleteUser } from '../api/userApi';
 import { profileImages } from '../assets/profile/profileImages';
 import ProfileImageModal from '../components/modal/ProfileImageModal';
 import WithdrawModal from '../components/modal/WithdrawModal';
+import { handleApiError } from '../handleApiError';
 
 import './MyPage.css';
 
@@ -27,6 +28,7 @@ function MyPage() {
                 const data = await getMe();
                 setUser(data);
             } catch (error) {
+                if (handleApiError(error)) return;
                 console.error(error);
             }
         };
@@ -43,6 +45,7 @@ function MyPage() {
             await logout();
             navigate('/login', { replace: true });
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
             setIsLoggingOut(false);
         }
@@ -61,6 +64,7 @@ function MyPage() {
             await flushAmplitude();
             resetAmplitude();
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
             setWithdrawError('탈퇴에 실패했습니다. 다시 시도해주세요');
             setIsWithdrawing(false);
@@ -70,6 +74,7 @@ function MyPage() {
         try {
             await logout();
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
         }
 
@@ -87,6 +92,7 @@ function MyPage() {
 
             setIsProfileModalOpen(false);
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
         }
     };

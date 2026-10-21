@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getStudies } from '../api/studyApi';
-import { logout } from '../api/authApi';
+import { handleApiError } from '../handleApiError';
 
 import AdminHeader from '../components/layout/AdminHeader';
 import StudyCategoryFilter from '../components/study/StudyCategoryFilter';
@@ -31,6 +31,7 @@ function AdminStudyListPage() {
                     setStudies(data.studies ?? []);
                 }
             } catch (error) {
+                if (handleApiError(error)) return;
                 console.error(error);
 
                 if (!cancelled) {

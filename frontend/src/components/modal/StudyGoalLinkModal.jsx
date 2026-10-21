@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getMatchingGoals } from '../../api/studyApi';
+import { handleApiError } from '../../handleApiError';
 
 import CategoryChip from '../CategoryChip';
 import SmallButton from '../common/SmallButton';
@@ -42,6 +43,7 @@ function StudyGoalLinkModal({
                 }
             } catch (error) {
                 if (!cancelled) {
+                    if (handleApiError(error)) return;
                     setErrorMessage(error.message);
                 }
             } finally {

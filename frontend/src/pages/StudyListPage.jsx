@@ -7,6 +7,7 @@ import StudyCategoryFilter from '../components/study/StudyCategoryFilter';
 import StudyCard from '../components/study/StudyCard';
 import StudyGoalLinkModal from '../components/modal/StudyGoalLinkModal';
 import StudyJoinSuccessModal from '../components/modal/StudyJoinSuccessModal';
+import { handleApiError } from '../handleApiError';
 
 import './StudyListPage.css';
 import StudyAvailabilityWarningModal from '../components/modal/StudyAvailabilityWarningModal';
@@ -45,6 +46,7 @@ function StudyListPage({ isJoined, onJoined }) {
 
                 setStudies(sortedStudies);
             } catch (error) {
+                if (handleApiError(error)) return;
                 console.error(error);
             } finally {
                 setIsLoading(false);
@@ -71,6 +73,7 @@ function StudyListPage({ isJoined, onJoined }) {
                 setSelectedStudy(null);
             }
         } catch (error) {
+            if (handleApiError(error)) return;
             if (error.status === 409) {
                 setIsAvailabilityWarningOpen(true);
                 return;
@@ -95,6 +98,7 @@ function StudyListPage({ isJoined, onJoined }) {
             }
             
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error('스터디 정원 확인 실패:', error);
             setJoinError(error.message);
         } finally {

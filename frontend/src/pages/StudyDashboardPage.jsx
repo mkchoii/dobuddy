@@ -8,6 +8,7 @@ import StudyProfileCard from '../components/study/StudyProfileCard';
 import StudyMemberList from '../components/study/StudyMemberList';
 import StudyMemberDetailModal from '../components/modal/StudyMemberDetailModal';
 import StudyGoalManageModal from '../components/modal/StudyGoalManageModal';
+import { handleApiError } from '../handleApiError';
 
 import './StudyDashboardPage.css';
 import vectorIcon from '../assets/icons/vector.svg';
@@ -38,6 +39,7 @@ function StudyDashboardPage({ studyId }) {
                 const data = await getStudyDashboard(studyId);
                 setDashboard(data);
             } catch (error) {
+                if (handleApiError(error)) return;
                 setErrorMessage(error.message);
             } finally {
                 setIsLoading(false);
@@ -59,6 +61,7 @@ function StudyDashboardPage({ studyId }) {
 
             setSelectedMember(data);
         } catch (error) {
+            if (handleApiError(error)) return;
             setMemberError(error.message);
         } finally {
             setIsMemberLoading(false);
@@ -74,6 +77,7 @@ function StudyDashboardPage({ studyId }) {
             setMatchingGoals(data.goals);
             setIsGoalManageOpen(true);
         } catch (error) {
+            if (handleApiError(error)) return;
             alert(error.message);
         } finally {
             setIsMatchingGoalLoading(false);
@@ -88,6 +92,7 @@ function StudyDashboardPage({ studyId }) {
 
             setIsGoalManageOpen(false);
         } catch (error) {
+            if (handleApiError(error)) return;
             alert(error.message);
         } finally {
             setIsGoalManageSaving(false);

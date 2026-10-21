@@ -1,7 +1,9 @@
+import { apiFetch } from "./apiFetch";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export async function createGoal(category, goalName) {
-    const response = await fetch(`${API_BASE_URL}/goals`, {
+    const response = await apiFetch(`${API_BASE_URL}/goals`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -30,7 +32,7 @@ export async function createGoal(category, goalName) {
 }
 
 export async function updateGoal(goalId, data) {
-    const response = await fetch(
+    const response = await apiFetch(
         `${API_BASE_URL}/goals/${goalId}`,
         {
             method: 'PATCH',
@@ -57,7 +59,7 @@ export async function updateGoal(goalId, data) {
 }
 
 export async function deleteGoal(goalId) {
-    const response = await fetch(
+    const response = await apiFetch(
         `${API_BASE_URL}/goals/${goalId}`,
         {
             method: 'DELETE',

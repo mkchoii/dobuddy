@@ -1,7 +1,9 @@
+import { apiFetch } from "./apiFetch";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export async function getMe() {
-    const response = await fetch(`${API_BASE_URL}/user/me`, {
+    const response = await apiFetch(`${API_BASE_URL}/user/me`, {
         method: 'GET',
         credentials: 'include',
     });
@@ -15,7 +17,7 @@ export async function getMe() {
 }
 
 export async function updateProfileImage(profileImageId) {
-    const response = await fetch(
+    const response = await apiFetch(
         `${API_BASE_URL}/user/me/profile-image`,
         {
             method: 'PATCH',
@@ -36,7 +38,7 @@ export async function updateProfileImage(profileImageId) {
 }
 
 export async function changePassword(currentPassword, newPassword) {
-    const response = await fetch(
+    const response = await apiFetch(
         `${API_BASE_URL}/user/me/password`,
         {
             method: 'PATCH',
@@ -58,7 +60,7 @@ export async function changePassword(currentPassword, newPassword) {
 }
 
 export async function deleteUser() {
-    const response = await fetch(`${API_BASE_URL}/user/me`, {
+    const response = await apiFetch(`${API_BASE_URL}/user/me`, {
         method: 'DELETE',
         credentials: 'include',
     });
@@ -70,7 +72,7 @@ export async function deleteUser() {
 }
 
 export async function updateFinalGoal(finalGoal) {
-    const response = await fetch(
+    const response = await apiFetch(
         `${API_BASE_URL}/user/me/final-goal`,
         {
             method: 'PUT',

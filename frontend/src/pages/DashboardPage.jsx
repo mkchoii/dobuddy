@@ -23,6 +23,7 @@ import {
 
 import './DashboardPage.css';
 import { trackGoalCreated, trackGoalDeleted, trackGoalSummaryCardViewed, trackGoalUpdated, trackTaskCompleted, trackTaskCompletedCanceled, trackTaskCreated, trackTaskDeleted, trackTaskUpdated } from '../amplitude';
+import { handleApiError } from '../handleApiError';
 
 function DashboardPage() {
     const [dashboard, setDashboard] = useState(null);
@@ -39,11 +40,8 @@ function DashboardPage() {
             const data = await getDashboard(date);
             setDashboard(data);
         } catch (error) {
-            if (error.message === 'SESSION_EXPIRED') {
-                alert('세션이 만료되었습니다. 다시 시도해주세요.');
-                window.location.replace('/login');
-                return;
-            }
+            if (handleApiError(error)) return;
+
             console.error(error);
             setError('대시보드를 불러오지 못했습니다.');
         }
@@ -115,6 +113,7 @@ function DashboardPage() {
             setFinalGoalInput('');
             setIsFinalGoalEditModalOpen(false);
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
         }
     };
@@ -154,6 +153,7 @@ function DashboardPage() {
                 })),
             }));
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
         }
     };
@@ -190,6 +190,7 @@ function DashboardPage() {
 
             return true;
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
             return false;
         }
@@ -220,6 +221,7 @@ function DashboardPage() {
 
             return true;
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
             return false;
         }
@@ -263,6 +265,7 @@ function DashboardPage() {
 
             return true;
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
             return false;
         }
@@ -304,6 +307,7 @@ function DashboardPage() {
 
             return true;
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
             return false;
         }
@@ -356,6 +360,7 @@ function DashboardPage() {
 
             return true;
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
             return false;
         }
@@ -386,6 +391,7 @@ function DashboardPage() {
 
             return true;
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
             return false;
         }

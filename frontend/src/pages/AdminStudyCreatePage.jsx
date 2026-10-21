@@ -67,6 +67,7 @@ function AdminStudyCreatePage() {
 
             navigate('/admin', { replace: true });
         } catch (err) {
+            if (handleApiError(error)) return;
             setError(err.message);
         } finally {
             setIsCreating(false);

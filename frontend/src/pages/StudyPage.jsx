@@ -19,6 +19,7 @@ function StudyPage() {
                 const data = await getMyStudy();
                 setStudyId(data.studyId);
             } catch (error) {
+                if (handleApiError(error)) return;
                 setErrorMessage(error.message);
             } finally {
                 setIsLoading(false);

@@ -8,6 +8,7 @@ import PasswordChangeCompleteModal from '../components/modal/PasswordChangeCompl
 
 import { getMe, changePassword } from '../api/userApi';
 import { profileImages } from '../assets/profile/profileImages';
+import { handleApiError } from '../handleApiError';
 
 import './PasswordChangePage.css';
 
@@ -28,6 +29,7 @@ function PasswordChangePage() {
                 const data = await getMe();
                 setUser(data);
             } catch (error) {
+                if (handleApiError(error)) return;
                 console.error(error);
             }
         };
@@ -58,6 +60,7 @@ function PasswordChangePage() {
             setIsCompletePopupOpen(true);
 
         } catch (error) {
+            if (handleApiError(error)) return;
             setCurrentPinValue('');
             setNewPinValue('');
             
