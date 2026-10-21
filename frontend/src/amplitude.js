@@ -18,7 +18,7 @@ const formatTaskId = taskId => {
 }
 
 // 페이지명
-const getPageName = () => {
+export const getPageName = () => {
   const path = window.location.pathname;
 
   const pageMap = {
@@ -31,7 +31,8 @@ const getPageName = () => {
     '/mypage': 'MyPage',
     '/password-change': 'PasswordChangePage',
     '/dashboard': 'DashboardPage',
-    '/study/list': 'StudyListPage'
+    '/study/list': 'StudyListPage',
+    '/study/dashboard': 'StudyDashboardPage'
   };
 
   return pageMap[path] ?? 'UnknownPage';
@@ -66,6 +67,7 @@ const GOAL_CATEGORY_MAP = {
 // SDK 초기화
 export const initAmplitude = () => {
     amplitude.init(import.meta.env.VITE_AMPLITUDE_API_KEY, {
+        sessionTimeout: 10*60*1000,
         autocapture: {
           attribution: true,
           pageViews: false,
@@ -317,4 +319,90 @@ export const trackTaskCompletedCanceled = (data) => {
 // GoalSummaryCard_Viewed
 export const trackGoalSummaryCardViewed = () => {
     trackEvent('GoalSummaryCard_Viewed');
+};
+
+export const trackStudyJoinSucceeded = (data) => {
+    setUserProperties({
+        is_study_joined: true,
+        study_id: formatStudyId(data.studyId),
+        linked_category: GOAL_CATEGORY_MAP[data.category]
+    });
+
+    if (data.isFirstStudy) {
+        setUserPropertiesOnce({
+            first_study_joined_at: data.firstStudyJoinedAt
+        });
+    }
+
+    trackEvent('StudyJoin_Succeeded', {
+        member_count: data.memberCount,
+        goal_ids: data.goalIds.map(formatGoalId),
+        goal_category: GOAL_CATEGORY_MAP[data.category],
+        linked_study_id: formatStudyId(data.studyId),
+        is_first_study_join: data.isFirstStudy,
+        signup_day_count: data.signupDayCount,
+        first_goal_minute_count: data.firstGoalMinuteCount,
+        linked_goal_count: data.goalIds.length
+    });
+};
+
+export const trackStudyJoinFailed = (data) => {
+    trackEvent('StudyJoin_Failed', {
+        fail_reason: data.failReason,
+        goal_ids: data.goalIds.map(formatGoalId),
+        goal_category: GOAL_CATEGORY_MAP[data.category],
+        linked_study_id: formatStudyId(data.studyId)
+    });
+};
+
+export const trackStudyExpelled = (data) => {
+    trackEvent('Study_Expelled', {
+        join_day_count: data.joinDayCount,
+        member_count: data.memberCount,
+        user_id: data.userId,
+        linked_study_id: formatStudyId(data.studyId)
+    });
+};
+
+export const trackStudyJoinModalCanceled = (data) => {
+    trackEvent('StudyJoinModal_Canceled', {
+        linked_study_id: formatStudyId(data.studyId),
+        cancel_reason: data.cancelReason,
+        goal_ids: data.goalIds == null
+            ? null
+            : data.goalIds.map(formatGoalId)
+    });
+};
+
+export const trackStudyMemberModalViewed = (data) => {
+    trackEvent('StudyMemberModal_Viewed', {
+        linked_study_id: formatStudyId(data.studyId),
+        viewed_user_id: data.viewedUserId,
+        is_self_viewed: data.isSelfViewed
+    });
+};
+
+export const trackLogoutSucceeded = async () => {
+    await amplitude.track('Logout_Succeeded').promise;
+    amplitude.reset();
+};
+
+export const trackApiRequestFailed = (data) => {
+    trackEvent('ApiRequest_Failed', {
+        request_name: data.requestName,
+        status_code: data.statusCode,
+        error_code: data.errorCode
+    });
+};
+
+export const trackPageViewed = (previousPageName) => {
+    trackEvent('Page_Viewed', {
+        previous_page_name: previousPageName
+    });
+};
+
+export const trackPageScrolled = (scrollDepth) => {
+    trackEvent('Page_Scrolled', {
+        scroll_depth: scrollDepth
+    });
 };

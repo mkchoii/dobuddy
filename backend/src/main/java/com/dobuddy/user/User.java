@@ -43,10 +43,16 @@ public class User {
     private LocalDateTime accessAt;
 
     @Column
+    private LocalDateTime firstGoalCreatedAt;
+
+    @Column
     private LocalDateTime firstTaskCreatedAt;
 
     @Column
     private LocalDateTime firstTaskCompletedAt;
+
+    @Column
+    private LocalDateTime firstStudyJoinedAt;
 
     @PrePersist
     public void prePersist() {
@@ -72,6 +78,8 @@ public class User {
 
     public void updatePassword(String password) { this.password = password; }
     public void updateAccessAt(LocalDateTime accessAt) { this.accessAt = accessAt; }
+    public void setFirstGoalCreatedAt(LocalDateTime firstGoalCreatedAt) { this.firstGoalCreatedAt = firstGoalCreatedAt; }
     public void setFirstTaskCreatedAt(LocalDateTime firstTaskCreatedAt) { this.firstTaskCreatedAt = firstTaskCreatedAt; }
     public void setFirstTaskCompletedAt(LocalDateTime firstTaskCompletedAt) { this.firstTaskCompletedAt = firstTaskCompletedAt; }
+    public void setFirstStudyJoinedAt(LocalDateTime firstStudyJoinedAt) { this.firstStudyJoinedAt = firstStudyJoinedAt; }
 }

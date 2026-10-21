@@ -42,9 +42,10 @@ function StudyPage() {
             <Route
                 index
                 element={
-                    studyId === null
-                        ? <StudyListPage isJoined={false} onJoined={setStudyId} />
-                        : <StudyDashboardPage studyId={studyId} />
+                    <Navigate
+                        to={studyId === null ? 'list' : 'dashboard'}
+                        replace
+                    />
                 }
             />
 
@@ -58,7 +59,19 @@ function StudyPage() {
                 }
             />
 
-            <Route path="*" element={<Navigate to="/study" replace />} />
+            <Route 
+                path="dashboard"
+                element={
+                    studyId !== null
+                        ? <StudyDashboardPage studyId={studyId} />
+                        : <Navigate to="/study/list" replace />
+                } 
+            />
+
+            <Route
+                path="*"
+                element={<Navigate to="/study" replace />}
+            />
         </Routes>
     );
 }

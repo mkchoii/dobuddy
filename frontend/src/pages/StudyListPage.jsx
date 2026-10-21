@@ -11,6 +11,7 @@ import { handleApiError } from '../handleApiError';
 
 import './StudyListPage.css';
 import StudyAvailabilityWarningModal from '../components/modal/StudyAvailabilityWarningModal';
+import { trackApiRequestFailed, trackStudyJoinFailed, trackStudyJoinModalCanceled, trackStudyJoinSucceeded } from '../amplitude';
 
 
 function StudyListPage({ isJoined, onJoined }) {
@@ -66,6 +67,7 @@ function StudyListPage({ isJoined, onJoined }) {
             const result = await joinStudy(studyId, goalIds);
 
             if (result.joined) {
+                trackStudyJoinSucceeded(result);
                 setJoinedStudy({
                     ...selectedStudy,
                     studyId: result.studyId,
@@ -73,11 +75,30 @@ function StudyListPage({ isJoined, onJoined }) {
                 setSelectedStudy(null);
             }
         } catch (error) {
+            trackApiRequestFailed({
+                requestName: 'study_join',
+                statusCode: error.status ?? null,
+                errorCode: error.errorCode ?? null
+            });
+
             if (handleApiError(error)) return;
+
             if (error.status === 409) {
+                trackStudyJoinFailed({
+                    failReason: 'study_full',
+                    goalIds: goalIds,
+                    category: selectedStudy.category,
+                    studyId: studyId
+                })
                 setIsAvailabilityWarningOpen(true);
                 return;
             }
+            trackStudyJoinFailed({
+                    failReason: 'server_error',
+                    goalIds: goalIds,
+                    category: selectedStudy.category,
+                    studyId: studyId
+                })
             setJoinError(error.message);
         } finally {
             setIsJoining(false);
@@ -94,6 +115,12 @@ function StudyListPage({ isJoined, onJoined }) {
             setSelectedStudy(study);
 
             if (!canJoin) {
+                trackStudyJoinModalCanceled({
+                    studyId: study.studyId,
+                    cancelReason: 'study_full',
+                    goalIds: null
+                });
+
                 setIsAvailabilityWarningOpen(true);
             }
             
@@ -146,7 +173,12 @@ function StudyListPage({ isJoined, onJoined }) {
                     {selectedStudy && !isAvailabilityWarningOpen && (
                         <StudyGoalLinkModal
                             study={selectedStudy}
-                            onClose={() => {
+                            onClose={(goalIds) => {
+                                trackStudyJoinModalCanceled({
+                                    studyId: selectedStudy.studyId,
+                                    cancelReason: 'popup_closed',
+                                    goalIds
+                                });
                                 setSelectedStudy(null);
                                 setJoinError('');
                             }}

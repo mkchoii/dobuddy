@@ -92,14 +92,17 @@ export async function joinStudy(studyId, goalIds) {
 
     if (!response.ok) {
         let message = '스터디 가입에 실패했습니다.';
+        let errorCode = null;
 
         try {
             const data = await response.json();
             message = data.message || message;
+            errorCode = data.errorCode ?? data.code ?? null;
         } catch {}
 
         const error = new Error(message);
         error.status = response.status;
+        error.errorCode = errorCode;
 
         throw error;
     }
@@ -200,6 +203,8 @@ export async function deleteStudyMember(studyId, studyMemberId) {
     if (!response.ok) {
         throw new Error('멤버 강퇴에 실패했습니다.');
     }
+
+    return response.json();
 }
 
 export async function createStudy(studyName, category, maxMembers) {

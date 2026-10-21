@@ -14,9 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Collections;
 import java.util.HashSet;
@@ -100,7 +98,7 @@ public class StudyService {
     }
 
     @Transactional
-    public void deleteStudyMember(Integer studyId, Integer studyMemberId) {
+    public StudyMemberDeleteResponse deleteStudyMember(Integer studyId, Integer studyMemberId) {
 
         StudyMember studyMember = studyMemberRepository.findByIdAndStudyId(studyMemberId, studyId)
                 .orElseThrow(() -> new BusinessException(
@@ -108,8 +106,30 @@ public class StudyService {
                         "스터디 회원을 찾을 수 없습니다."
                 ));
 
+        Integer userId = studyMember.getUser().getId();
+
+        LocalDateTime expelledAt = LocalDateTime.now();
+
+        long joinDayCount = Math.max(0,
+                Duration.between(
+                        studyMember.getJoinedAt(),
+                        expelledAt
+                ).toDays()
+        );
+
+        long memberCount = Math.max(0,
+                studyMemberRepository.countByStudyId(studyId) - 1
+        );
+
         studyMemberGoalRepository.deleteAllByStudyMemberId(studyMember.getId());
         studyMemberRepository.delete(studyMember);
+
+        return new StudyMemberDeleteResponse(
+                userId,
+                studyId,
+                joinDayCount,
+                memberCount
+        );
     }
 
     @Transactional
@@ -218,17 +238,12 @@ public class StudyService {
                         "사용자를 찾을 수 없습니다."
                 ));
 
+        boolean isFirstStudy = user.getFirstStudyJoinedAt() == null;
+
         if (studyMemberRepository.existsByUserId(userId)) {
             throw new BusinessException(
                     HttpStatus.BAD_REQUEST,
                     "이미 가입한 스터디가 있습니다."
-            );
-        }
-
-        if (studyMemberRepository.existsByStudyIdAndUserId(studyId, userId)) {
-            throw new BusinessException(
-                    HttpStatus.BAD_REQUEST,
-                    "이미 참여중인 스터디입니다."
             );
         }
 
@@ -270,11 +285,33 @@ public class StudyService {
 
         studyMemberGoalRepository.saveAll(memberGoals);
 
+        if (isFirstStudy) {
+            user.setFirstStudyJoinedAt(studyMember.getJoinedAt());
+        }
+
+        long firstGoalMinuteCount = Math.max(0, Duration.between(
+                user.getFirstGoalCreatedAt(),
+                studyMember.getJoinedAt()
+            ).toMinutes()
+        );
+
+        long signupDayCount = Math.max(0, Duration.between(
+                user.getCreatedAt(),
+                studyMember.getJoinedAt()
+            ).toDays()
+        );
+
         return new StudyJoinResponse(
                 studyId,
                 studyMember.getId(),
                 true,
-                request.getGoalIds()
+                request.getGoalIds(),
+                study.getCategory(),
+                currentMembers + 1,
+                isFirstStudy,
+                studyMember.getJoinedAt(),
+                firstGoalMinuteCount,
+                signupDayCount
         );
     }
 

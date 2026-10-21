@@ -35,11 +35,11 @@ public class StudyController {
     }
 
     @DeleteMapping("/{studyId}/members/{studyMemberId}")
-    public ResponseEntity<Void> deleteStudyMember(@PathVariable Integer studyId, @PathVariable Integer studyMemberId) {
+    public ResponseEntity<StudyMemberDeleteResponse> deleteStudyMember(@PathVariable Integer studyId, @PathVariable Integer studyMemberId) {
 
-        studyService.deleteStudyMember(studyId, studyMemberId);
+        StudyMemberDeleteResponse response = studyService.deleteStudyMember(studyId, studyMemberId);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{studyId}")

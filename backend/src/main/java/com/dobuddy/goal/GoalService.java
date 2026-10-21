@@ -46,7 +46,7 @@ public class GoalService {
                         "사용자를 찾을 수 없습니다."
                 ));
 
-        boolean isFirstGoal = !goalRepository.existsByUserId(userId);
+        boolean isFirstGoal = user.getFirstGoalCreatedAt() == null;
 
         boolean isSignupSession = Boolean.TRUE.equals(session.getAttribute("isSignupSession"));
 
@@ -57,6 +57,10 @@ public class GoalService {
         );
 
         Goal savedGoal = goalRepository.save(goal);
+
+        if (isFirstGoal) {
+            user.setFirstGoalCreatedAt(savedGoal.getCreatedAt());
+        }
 
         long signupMinuteCount = Math.max(0, Duration.between(
                 user.getCreatedAt(),

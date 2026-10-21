@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { setAmplitudeUserId, trackEvent, setUserProperties, setUserPropertiesOnce, getChannel } from '../amplitude';
+import { setAmplitudeUserId, trackEvent, setUserProperties, setUserPropertiesOnce, getChannel, trackApiRequestFailed } from '../amplitude';
 
 import PasswordInput from '../components/common/PasswordInput';
 import Button from '../components/common/Button';
@@ -49,6 +49,11 @@ function PasswordSetupPage() {
 
             navigate('/goal-setting', { replace: true });
         } catch (error) {
+            trackApiRequestFailed({
+                requestName: 'signup',
+                statusCode: error.status ?? null,
+                errorCode: error.errorCode ?? null
+            });
             setErrorMessage(error.message);
         }
     };

@@ -22,7 +22,7 @@ import {
 } from '../api/dashboardApi';
 
 import './DashboardPage.css';
-import { trackGoalCreated, trackGoalDeleted, trackGoalSummaryCardViewed, trackGoalUpdated, trackTaskCompleted, trackTaskCompletedCanceled, trackTaskCreated, trackTaskDeleted, trackTaskUpdated } from '../amplitude';
+import { trackApiRequestFailed, trackGoalCreated, trackGoalDeleted, trackGoalSummaryCardViewed, trackGoalUpdated, trackTaskCompleted, trackTaskCompletedCanceled, trackTaskCreated, trackTaskDeleted, trackTaskUpdated } from '../amplitude';
 import { handleApiError } from '../handleApiError';
 
 function DashboardPage() {
@@ -152,6 +152,11 @@ function DashboardPage() {
                 })),
             }));
         } catch (error) {
+            trackApiRequestFailed({
+                requestName: 'task_complete',
+                statusCode: error.status ?? null,
+                errorCode: error.errorCode ?? null
+            });
             if (handleApiError(error)) return;
             console.error(error);
         }
@@ -306,6 +311,11 @@ function DashboardPage() {
 
             return true;
         } catch (error) {
+            trackApiRequestFailed({
+                requestName: 'goal_create',
+                statusCode: error.status ?? null,
+                errorCode: error.errorCode ?? null
+            });
             if (handleApiError(error)) return;
             console.error(error);
             return false;

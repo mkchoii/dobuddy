@@ -13,6 +13,7 @@ import { handleApiError } from '../handleApiError';
 import './StudyDashboardPage.css';
 import vectorIcon from '../assets/icons/vector.svg';
 import linkIcon from '../assets/icons/link.svg';
+import { trackStudyMemberModalViewed } from '../amplitude';
 
 function StudyDashboardPage({ studyId }) {
     const navigate = useNavigate();
@@ -58,6 +59,12 @@ function StudyDashboardPage({ studyId }) {
                 studyId,
                 member.studyMemberId
             );
+
+            trackStudyMemberModalViewed({
+                studyId,
+                viewedUserId: member.userId,
+                isSelfViewed: member.me
+            });
 
             setSelectedMember(data);
         } catch (error) {

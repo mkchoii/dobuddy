@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { trackEvent, resetAmplitude, flushAmplitude } from '../amplitude';
+import { trackEvent, resetAmplitude, flushAmplitude, trackLogoutSucceeded } from '../amplitude';
 
 import UserHeader from '../components/layout/UserHeader';
 import { logout } from '../api/authApi';
@@ -43,6 +43,9 @@ function MyPage() {
 
         try {
             await logout();
+
+            trackLogoutSucceeded();
+
             navigate('/login', { replace: true });
         } catch (error) {
             if (handleApiError(error)) return;

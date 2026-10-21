@@ -61,9 +61,7 @@ function StudyGoalLinkModal({
     }, [study.studyId]);
 
     return (
-        <div className="study-goal-modal-overlay" 
-              onClick={onClose}
-        >
+        <div className="study-goal-modal-overlay" >
             <div
                 className="study-goal-modal"
                 role="dialog"
@@ -74,7 +72,8 @@ function StudyGoalLinkModal({
                 <button
                     type="button"
                     className="study-goal-modal-close"
-                    onClick={onClose}
+                    onClick={() => onClose(selectedGoalIds)}
+                    disabled={isSubmitting}
                     aria-label="닫기"
                 >
                     <img src={closeIcon} alt="" />

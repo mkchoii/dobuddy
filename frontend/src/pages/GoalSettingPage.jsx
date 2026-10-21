@@ -10,7 +10,7 @@ import { createGoal } from '../api/goalApi';
 
 import './GoalSettingPage.css';
 import './AuthPage.css';
-import { trackGoalCreated } from '../amplitude';
+import { trackGoalCreated, trackApiRequestFailed } from '../amplitude';
 import { handleApiError } from '../handleApiError';
 
 function GoalSettingPage() {
@@ -54,6 +54,11 @@ function GoalSettingPage() {
                 replace: true
             });
         } catch (error) {
+            trackApiRequestFailed({
+                requestName: 'goal_create',
+                statusCode: error.status ?? null,
+                errorCode: error.errorCode ?? null
+            });
             if (handleApiError(error)) return;
             console.error(error);
         }

@@ -25,6 +25,7 @@ import AdminStudyDeleteModal from '../components/modal/AdminStudyDeleteModal';
 
 import './AdminStudyManagePage.css';
 import './StudyListPage.css';
+import { trackStudyExpelled } from '../amplitude';
 
 function AdminStudyManagePage() {
     const { studyId } = useParams();
@@ -159,10 +160,12 @@ function AdminStudyManagePage() {
         try {
             setIsDeleting(true);
 
-            await deleteStudyMember(
+            const data = await deleteStudyMember(
                 studyId,
                 deleteTarget.studyMemberId
             );
+
+            trackStudyExpelled(data);
 
             setStudy((prev) => ({
                 ...prev,
@@ -175,7 +178,7 @@ function AdminStudyManagePage() {
 
             setDeleteTarget(null);
         } catch (err) {
-            if (handleApiError(error)) return;
+            if (handleApiError(err)) return;
             alert(err.message);
         } finally {
             setIsDeleting(false);
