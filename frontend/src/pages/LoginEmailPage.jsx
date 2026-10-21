@@ -63,7 +63,10 @@ function LoginEmailPage() {
                     data.next === 'LOGIN' 
                     ? '/login/password' 
                     : '/signup/password', 
-                    { state : { email: email } }
+                    { 
+                        state : { email: email },
+                        replace: true 
+                    }
                 );
             }
 

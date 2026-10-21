@@ -28,7 +28,7 @@ function SignupCompletePage() {
     }, []);
 
     const handleLogin = () => {
-        navigate('/dashboard');
+        navigate('/dashboard', { replace: true });
     };
 
     return (

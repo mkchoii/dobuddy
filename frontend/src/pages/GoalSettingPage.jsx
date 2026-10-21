@@ -50,9 +50,8 @@ function GoalSettingPage() {
             trackGoalCreated(data, [data.category]);
 
             navigate('/signup-complete', {
-                state: {
-                    nickname: nickname,
-                },
+                state: {nickname: nickname},
+                replace: true
             });
         } catch (error) {
             if (handleApiError(error)) return;

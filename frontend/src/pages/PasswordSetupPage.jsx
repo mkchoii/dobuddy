@@ -47,7 +47,7 @@ function PasswordSetupPage() {
                 signup_at: data.signupAt
             });
 
-            navigate('/goal-setting');
+            navigate('/goal-setting', { replace: true });
         } catch (error) {
             setErrorMessage(error.message);
         }

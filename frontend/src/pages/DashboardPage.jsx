@@ -51,7 +51,6 @@ function DashboardPage() {
         loadDashboard();
     }, []);
 
-
     const handleSelectDate = (date) => {
         loadDashboard(date);
     };
