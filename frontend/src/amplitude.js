@@ -71,7 +71,7 @@ export const initAmplitude = () => {
         autocapture: {
           attribution: true,
           pageViews: false,
-          sessions: false,
+          sessions: true,
           elementInteractions: false,
           fileDownloads: false,
           formInteractions: false,
