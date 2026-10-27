@@ -63,7 +63,7 @@ function StudyGoalLinkModal({
     return (
         <div className="study-goal-modal-overlay" >
             <div
-                className="study-goal-modal"
+                className={`study-goal-modal ${submitError ? 'has-error' : ''}`}
                 role="dialog"
                 aria-modal="true"
                 aria-label="세부목표 연동"
