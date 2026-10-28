@@ -80,6 +80,11 @@ function PasswordLoginPage() {
         resetAttemptCount.current += 1;
 
         if (!email) {
+            trackEvent('PasswordReset_Failed', {
+                reset_attempt_count: resetAttemptCount.current,
+                fail_reason: 'email_missing'
+            });
+            
             setResetError('이메일 정보가 없습니다. 다시 시도하세요.');
             return;
         }
@@ -125,7 +130,7 @@ function PasswordLoginPage() {
     const handleOpenPasswordResetModal = () => {
         setResetError('');
         setIsPasswordResetModalOpen(true);
-    }
+    };
 
     const errorMessage =
         errorState === 'invalid'
