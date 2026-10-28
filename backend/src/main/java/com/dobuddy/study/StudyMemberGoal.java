@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Entity
 @Getter
@@ -32,7 +33,7 @@ public class StudyMemberGoal {
     private LocalDateTime createdAt;
 
     @PrePersist
-    public void prePersist() { this.createdAt = LocalDateTime.now(); }
+    public void prePersist() { this.createdAt = LocalDateTime.now(ZoneId.of("Asia/Seoul")); }
 
     public StudyMemberGoal(StudyMember studyMember, Goal goal) {
         this.studyMember = studyMember;

@@ -108,7 +108,7 @@ public class StudyService {
 
         Integer userId = studyMember.getUser().getId();
 
-        LocalDateTime expelledAt = LocalDateTime.now();
+        LocalDateTime expelledAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 
         long joinDayCount = Math.max(0,
                 Duration.between(

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Getter
 @Entity
@@ -42,7 +43,7 @@ public class Task {
     private LocalDateTime completedAt;
 
     @PrePersist
-    public void prePersist() {this.createdAt = LocalDateTime.now();}
+    public void prePersist() {this.createdAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));}
 
     public Task(Goal goal, LocalDate taskDate, String content) {
         this.goal = goal;

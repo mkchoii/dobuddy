@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.security.SecureRandom;
 
@@ -98,7 +99,7 @@ public class AuthService {
                 profileImageId
         );
 
-        user.updateAccessAt(LocalDateTime.now());
+        user.updateAccessAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")));
         User savedUser = userRepository.save(user);
 
         return new SignupResponse(
@@ -141,7 +142,7 @@ public class AuthService {
         }
 
         boolean isFirstLogin = user.getAccessAt() == null;
-        user.updateAccessAt(LocalDateTime.now());
+        user.updateAccessAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")));
         userRepository.save(user);
 
         boolean hasGoal = goalRepository.existsByUserId(user.getId());

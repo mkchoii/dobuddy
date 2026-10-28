@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Getter
 @Entity
@@ -33,7 +34,7 @@ public class StudyMember {
 
     @PrePersist
     public void prePersist() {
-        this.joinedAt = LocalDateTime.now();
+        this.joinedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
     }
 
     public StudyMember(Study study, User user) {

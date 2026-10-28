@@ -44,11 +44,7 @@ public class Goal {
 
     @PrePersist
     public void prePersist() {
-        System.out.println("JVM Timezone: " + ZoneId.systemDefault());
-        System.out.println("LocalDateTime.now(): " + LocalDateTime.now());
-        System.out.println("KST now(): " + LocalDateTime.now(ZoneId.of("Asia/Seoul")));
-
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
     }
 
     public void updateCategory(Category category) {
