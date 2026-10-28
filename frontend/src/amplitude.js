@@ -175,7 +175,7 @@ export const trackGoalCreated = (data, goalCategories) => {
       first_goal_created_at: data.createdAt
     });
   }
-  
+
   trackEvent('Goal_Created', {
     goal_id: formatGoalId(data.goalId),
     goal_category: GOAL_CATEGORY_MAP[data.category],
@@ -359,7 +359,7 @@ export const trackStudyExpelled = (data) => {
     trackEvent('Study_Expelled', {
         join_day_count: data.joinDayCount,
         member_count: data.memberCount,
-        user_id: data.userId,
+        expelled_user_id: data.userId,
         linked_study_id: formatStudyId(data.studyId)
     });
 };
