@@ -176,6 +176,14 @@ export const trackGoalCreated = (data, goalCategories) => {
     });
   }
   
+  console.log('서버 createdAt: ', data.createdAt);
+  console.log('브라우저 현재 시간: ', new Date().toISOString('sv-SE', {timeZone: 'Asia/Seoul'}));
+
+  const serverTime = new Date(`${data.createdAt}+09:00`).getTime();
+console.log('브라우저 - 서버 시간 차이(초):',
+  (Date.now() - serverTime) / 1000
+);
+
   trackEvent('Goal_Created', {
     goal_id: formatGoalId(data.goalId),
     goal_category: GOAL_CATEGORY_MAP[data.category],
