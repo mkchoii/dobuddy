@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Getter
 @Entity
@@ -43,6 +44,10 @@ public class Goal {
 
     @PrePersist
     public void prePersist() {
+        System.out.println("JVM Timezone: " + ZoneId.systemDefault());
+        System.out.println("LocalDateTime.now(): " + LocalDateTime.now());
+        System.out.println("KST now(): " + LocalDateTime.now(ZoneId.of("Asia/Seoul")));
+
         this.createdAt = LocalDateTime.now();
     }
 
