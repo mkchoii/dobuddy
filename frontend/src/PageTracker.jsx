@@ -28,11 +28,11 @@ function PageTracker() {
         const handleScroll = () => {
             const ScrollTop = window.scrollY || document.documentElement.scrollTop;
 
-            const scrollableHeight = document.documentElement.scrollHeight - sindow.innerHeight;
+            const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
 
             if (scrollableHeight <= 0) return;
 
-            const scrollPercent = Math.min(100, Math.floor((scrollTop / scrollableHeight) * 100));
+            const scrollPercent = Math.min(100, Math.floor((ScrollTop / scrollableHeight) * 100));
 
             thresholds.forEach((depth) => {
                 if (scrollPercent >= depth && !reachedDepths.has(depth)) {
