@@ -10,7 +10,7 @@ function PageTracker() {
     const location = useLocation();
     const previousPageRef = useRef(null);
 
-    // 기존 Page_Viewed
+    // Page_Viewed
     useEffect(() => {
         if (location.pathname === '/study') return;
 
@@ -23,28 +23,23 @@ function PageTracker() {
         if (location.pathname === '/study') return;
 
         const reachedDepths = new Set();
-        const INTERVAL = 10;
+        const thresholds = [50, 100];
 
         const handleScroll = () => {
-            const scrollTop =
-                window.scrollY || document.documentElement.scrollTop;
+            const ScrollTop = window.scrollY || document.documentElement.scrollTop;
 
-            const scrollableHeight =
-                document.documentElement.scrollHeight - window.innerHeight;
+            const scrollableHeight = document.documentElement.scrollHeight - sindow.innerHeight;
 
             if (scrollableHeight <= 0) return;
 
-            const scrollPercent = Math.min(
-                100,
-                Math.floor((scrollTop / scrollableHeight) * 100)
-            );
+            const scrollPercent = Math.min(100, Math.floor((scrollTop / scrollableHeight) * 100));
 
-            for (let depth = INTERVAL; depth <= 100; depth += INTERVAL) {
+            thresholds.forEach((depth) => {
                 if (scrollPercent >= depth && !reachedDepths.has(depth)) {
                     reachedDepths.add(depth);
                     trackPageScrolled(depth);
                 }
-            }
+            });
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
