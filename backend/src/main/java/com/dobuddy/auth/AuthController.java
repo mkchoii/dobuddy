@@ -94,9 +94,10 @@ public class AuthController {
     }
 
     @PatchMapping("/login/new-password")
-    public ResponseEntity<Void> resetPassword(@Valid @RequestBody EmailCheckRequest request) {
-        authService.resetPassword(request);
+    public ResponseEntity<PasswordResetResponse> resetPassword(@Valid @RequestBody EmailCheckRequest request) {
 
-        return ResponseEntity.noContent().build();
+        PasswordResetResponse response = authService.resetPassword(request);
+
+        return ResponseEntity.ok(response);
     }
 }

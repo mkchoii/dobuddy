@@ -90,12 +90,15 @@ export async function resetPassword(email) {
         body: JSON.stringify({ email }),
     });
 
-    if (!response.ok) {
-        const data = await response.json();
+    const data = await response.json();
 
+    if (!response.ok) {
         const error = new Error(data.message);
         error.code = data.code;
+        error.attemptCount = data.attemptCount;
 
         throw error;
     }
+
+    return data;
 }

@@ -77,14 +77,8 @@ function PasswordLoginPage() {
 
     const handlePasswordReset = async () => {
         if (isResetting) return;
-        resetAttemptCount.current += 1;
 
         if (!email) {
-            trackEvent('PasswordReset_Failed', {
-                reset_attempt_count: resetAttemptCount.current,
-                fail_reason: 'email_missing'
-            });
-            
             setResetError('이메일 정보가 없습니다. 다시 시도하세요.');
             return;
         }
@@ -93,10 +87,10 @@ function PasswordLoginPage() {
             setIsResetting(true);
             setResetError('');
 
-            await resetPassword(email);
+            const data = await resetPassword(email);
 
             trackEvent('PasswordReset_Succeeded', {
-                reset_attempt_count: resetAttemptCount.current
+                reset_attempt_count: data.attemptCount
             });
 
             setIsPasswordResetModalOpen(false);
@@ -112,7 +106,7 @@ function PasswordLoginPage() {
 
             if (failReason) {
                 trackEvent('PasswordReset_Failed', {
-                    reset_attempt_count: resetAttemptCount.current,
+                    reset_attempt_count: error.attemptCount,
                     fail_reason: failReason
                 });
             }

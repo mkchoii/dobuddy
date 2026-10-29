@@ -156,7 +156,7 @@ public class AuthService {
     }
 
     @Transactional
-    public void resetPassword(EmailCheckRequest request) {
+    public PasswordResetResponse resetPassword(EmailCheckRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new BusinessException(
@@ -165,12 +165,18 @@ public class AuthService {
                         "사용자 정보 조회에 실패했습니다.")
                 );
 
+        // 재설정 시도 횟수 증가
+        PasswordResetCountLimiter.ResetAttemptResult result = passwordResetCountLimiter.tryAcquire(user.getEmail());
+
+        int attemptCount = result.attemptCount();
+
         // 하루 5회 요청 제한
-        if (!passwordResetCountLimiter.tryAcquire(user.getEmail())) {
+        if (!result.allowed()) {
             throw new BusinessException(
                     HttpStatus.TOO_MANY_REQUESTS,
                     "DAILY_LIMIT",
-                    "비밀번호 재설정은 하루 최대 5회까지 가능합니다."
+                    "비밀번호 재설정은 하루 최대 5회까지 가능합니다.",
+                    attemptCount
             );
         }
 
@@ -184,7 +190,8 @@ public class AuthService {
             throw new BusinessException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     "MAIL_FAILED",
-                    "임시 비밀번호 메일 발송에 실패했습니다."
+                    "임시 비밀번호 메일 발송에 실패했습니다.",
+                    attemptCount
             );
         }
 
@@ -196,8 +203,11 @@ public class AuthService {
             throw new BusinessException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     "DB_FAILED",
-                    "비밀번호 재설정에 실패했습니다."
+                    "비밀번호 재설정에 실패했습니다.",
+                    attemptCount
             );
         }
+
+        return new PasswordResetResponse(attemptCount);
     }
 }
