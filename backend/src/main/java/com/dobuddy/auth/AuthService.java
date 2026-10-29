@@ -4,7 +4,9 @@ import com.dobuddy.BusinessException;
 import com.dobuddy.EmailService;
 import com.dobuddy.auth.dto.*;
 import com.dobuddy.goal.GoalRepository;
+import com.dobuddy.invite.Invite;
 import com.dobuddy.invite.InviteRepository;
+import com.dobuddy.user.Channel;
 import com.dobuddy.user.User;
 import com.dobuddy.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -84,19 +86,23 @@ public class AuthService {
             throw new BusinessException(HttpStatus.CONFLICT, "이미 가입된 이메일입니다.");
         }
 
-        if (!inviteRepository.existsByEmail(email)) {
-            throw new BusinessException(HttpStatus.FORBIDDEN, "초대되지 않은 이메일입니다.");
-        }
+        Invite invite = inviteRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessException(
+                        HttpStatus.FORBIDDEN,
+                        "초대되지 않은 이메일입니다.")
+                );
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         String nickname = generateNickname();
         int profileImageId = generateProfileImageId();
+        Channel channel = invite.getChannel();
 
         User user = new User(
                 nickname,
                 email,
                 encodedPassword,
-                profileImageId
+                profileImageId,
+                channel
         );
 
         user.updateAccessAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")));
@@ -106,7 +112,8 @@ public class AuthService {
                 savedUser.getId(),
                 savedUser.getEmail(),
                 savedUser.getNickname(),
-                savedUser.getCreatedAt()
+                savedUser.getCreatedAt(),
+                savedUser.getChannel()
         );
     }
 

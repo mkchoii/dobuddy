@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { setAmplitudeUserId, trackEvent, setUserProperties, setUserPropertiesOnce, getChannel, trackApiRequestFailed } from '../amplitude';
+import { setAmplitudeUserId, trackEvent, setUserProperties, setUserPropertiesOnce, trackApiRequestFailed } from '../amplitude';
 
 import PasswordInput from '../components/common/PasswordInput';
 import Button from '../components/common/Button';
@@ -33,11 +33,10 @@ function PasswordSetupPage() {
             const data = await signup(email, pinValue);
 
             setAmplitudeUserId(data.userId);
-            const channel = getChannel();
 
             setUserPropertiesOnce({
                 signup_at: data.signupAt,
-                ...(channel && { channel })
+                ...(data.channel && { channel: data.channel.toLowerCase() })
             });
             setUserProperties({
                 is_study_joined: false

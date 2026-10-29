@@ -55,6 +55,10 @@ public class User {
     @Column
     private LocalDateTime firstStudyJoinedAt;
 
+    @Enumerated(EnumType.STRING)
+    @Column
+    private Channel channel;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
@@ -64,13 +68,15 @@ public class User {
             String nickname,
             String email,
             String password,
-            Integer profileImageId
+            Integer profileImageId,
+            Channel channel
     ) {
         this.nickname = nickname;
         this.email = email;
         this.password = password;
         this.profileImageId = profileImageId;
         this.role = Role.USER;
+        this.channel = channel;
     }
 
     public void updateFinalGoal(String finalGoal) { this.finalGoal = finalGoal; }

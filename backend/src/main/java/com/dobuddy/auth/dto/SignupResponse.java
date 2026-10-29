@@ -1,5 +1,6 @@
 package com.dobuddy.auth.dto;
 
+import com.dobuddy.user.Channel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,4 +14,5 @@ public class SignupResponse {
     private String email;
     private String nickname;
     private LocalDateTime signupAt;
+    private Channel channel;
 }

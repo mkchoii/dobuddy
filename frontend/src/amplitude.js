@@ -38,20 +38,6 @@ export const getPageName = () => {
   return pageMap[path] ?? 'UnknownPage';
 };
 
-// 유입 채널
-const CHANNEL_MAP = {
-    everytime: 'campus_community',
-    campuspick: 'campus_community',
-    linkareer: 'job_site',
-    comento: 'job_site',
-    jasoseol: 'job_site',
-    naver_cafe: 'naver_cafe',
-    kakao_openchat: 'sns',
-    threads: 'sns'
-};
-
-const STORAGE_KEY = 'channel';
-
 // 세부목표명
 const GOAL_CATEGORY_MAP = {
     CERTIFICATE: 'certificate',
@@ -62,7 +48,6 @@ const GOAL_CATEGORY_MAP = {
     ACTIVITY_PROJECT: 'activity_project',
     STUDY: 'study'
 };
-
 
 // SDK 초기화
 export const initAmplitude = () => {
@@ -123,22 +108,6 @@ export const setUserPropertiesOnce = (properties) => {
     amplitude.identify(identify);
 };
 
-// 최초 유입 채널 저장
-export const saveChannel = () => {
-  const savedChannel = localStorage.getItem(STORAGE_KEY);
-
-  if (savedChannel) return;
-
-  const params = new URLSearchParams(window.location.search);
-  const source = params.get('utm_source')?.toLowerCase();
-
-  const channel = CHANNEL_MAP[source];
-
-  if (channel) {
-    localStorage.setItem(STORAGE_KEY, channel);
-  }
-};
-
 // 진입 경로 저장
 export const initEntrySource = () => {
     const params = new URLSearchParams(window.location.search);
@@ -154,11 +123,6 @@ export const initEntrySource = () => {
 export const getEntrySource = () => {
     return sessionStorage.getItem('entry_source') || 'direct';
 };
-
-// 저장된 채널 조회
-export const getChannel = () => {
-  return localStorage.getItem(STORAGE_KEY);
-}
 
 // Goal_Created 이벤트
 export const trackGoalCreated = (data, goalCategories) => {

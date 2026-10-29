@@ -1,5 +1,6 @@
 package com.dobuddy.invite;
 
+import com.dobuddy.user.Channel;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,4 +22,8 @@ public class Invite {
 
     @Column(nullable = false)
     private LocalDateTime invitedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column
+    private Channel channel;
 }
