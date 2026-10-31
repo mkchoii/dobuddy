@@ -42,15 +42,17 @@ public interface WeeklyMetricRepository extends JpaRepository<WeeklyMetric, Inte
     SELECT
         COUNT(a.user_id) AS "numerator",
         COUNT(*) AS "denominator"
-    FROM users u
+    FROM weekly_snapshot_users u
     LEFT JOIN achieved_users a
-        ON u.id = a.user_id
-    WHERE LOWER(CAST(u.role AS TEXT)) <> 'admin'
+        ON u.user_id = a.user_id
+    WHERE u.week_start = :weekStart
+      AND u.role <> 'ADMIN'
       AND u.access_at IS NOT NULL
       AND u.access_at::date >= :activeSince
       AND u.access_at < :weekEnd
     """, nativeQuery = true)
     ActiveUserRateResult calculateActiveUserRate(
+            @Param("weekStart") LocalDate weekStart,
             @Param("weekStartTime") LocalDateTime weekStartTime,
             @Param("weekEnd") LocalDateTime weekEnd,
             @Param("activeSince") LocalDate activeSince
@@ -82,16 +84,19 @@ public interface WeeklyMetricRepository extends JpaRepository<WeeklyMetric, Inte
     planned_tasks AS (
         -- 1. 현재 tasks에 존재하는 예정 태스크
         SELECT
-            t.id AS task_id,
+            t.task_id AS task_id,
             g.user_id,
             CASE
                 WHEN l.action = 'complete' THEN 1
                 ELSE 0
             END AS is_completed
-        FROM tasks t
-        JOIN goals g ON g.id = t.goal_id
-        LEFT JOIN last_status l ON l.task_id = t.id
-        WHERE t.task_date >= :weekStart
+        FROM weekly_snapshot_tasks t
+        JOIN weekly_snapshot_goals g 
+            ON g.goal_id = t.goal_id
+            AND g.week_start = t.week_start
+        LEFT JOIN last_status l ON l.task_id = t.task_id
+        WHERE t.week_start = :weekStart
+          AND t.task_date >= :weekStart
           AND t.task_date < :weekEndDate
 
         UNION ALL
@@ -107,8 +112,9 @@ public interface WeeklyMetricRepository extends JpaRepository<WeeklyMetric, Inte
           AND l.task_date < :weekEndDate
           AND NOT EXISTS (
               SELECT 1
-              FROM tasks t
-              WHERE t.id = l.task_id
+              FROM weekly_snapshot_tasks t
+              WHERE t.task_id = l.task_id
+                AND t.week_start = :weekStart
           )
     )
     SELECT
@@ -117,12 +123,15 @@ public interface WeeklyMetricRepository extends JpaRepository<WeeklyMetric, Inte
         SUM(p.is_completed) AS "completedCount",
         EXISTS (
             SELECT 1
-            FROM study_members sm
+            FROM weekly_snapshot_study_members sm
             WHERE sm.user_id = p.user_id
+              AND sm.week_start = :weekStart
         ) AS "studyJoined"
     FROM planned_tasks p
-    JOIN users u ON u.id = p.user_id
-    WHERE LOWER(CAST(u.role AS TEXT)) <> 'admin'
+    JOIN weekly_snapshot_users u 
+      ON u.user_id = p.user_id
+      AND u.week_start = :weekStart
+    WHERE u.role <> 'ADMIN'
     GROUP BY p.user_id
     """, nativeQuery = true)
     List<WeeklyProgressResult> calculateWeeklyProgress(
@@ -157,15 +166,16 @@ public interface WeeklyMetricRepository extends JpaRepository<WeeklyMetric, Inte
     planned_tasks AS (
         -- 1. 현재 존재하는 예정 태스크
         SELECT
-            t.id AS task_id,
+            t.task_id AS task_id,
             t.goal_id,
             CASE
                 WHEN l.action = 'complete' THEN 1
                 ELSE 0
             END AS is_completed
-        FROM tasks t
-        LEFT JOIN last_status l ON l.task_id = t.id
-        WHERE t.task_date >= :weekStart
+        FROM weekly_snapshot_tasks t
+        LEFT JOIN last_status l ON l.task_id = t.task_id
+        WHERE t.week_start = :weekStart
+          AND t.task_date >= :weekStart
           AND t.task_date < :weekEndDate
 
         UNION ALL
@@ -181,20 +191,25 @@ public interface WeeklyMetricRepository extends JpaRepository<WeeklyMetric, Inte
           AND l.task_date < :weekEndDate
           AND NOT EXISTS (
               SELECT 1
-              FROM tasks t
-              WHERE t.id = l.task_id
+              FROM weekly_snapshot_tasks t
+              WHERE t.task_id = l.task_id
+                AND t.week_start = :weekStart
           )
     )
     SELECT
-        g.id AS "goalId",
-        CAST(g.category AS TEXT) AS "category",
+        g.goal_id AS "goalId",
+        g.category AS "category",
         COUNT(*) AS "plannedCount",
         SUM(p.is_completed) AS "completedCount"
     FROM planned_tasks p
-    JOIN goals g ON g.id = p.goal_id
-    JOIN users u ON u.id = g.user_id
-    WHERE LOWER(CAST(u.role AS TEXT)) <> 'admin'
-    GROUP BY g.id, g.category
+    JOIN weekly_snapshot_goals g 
+      ON g.goal_id = p.goal_id
+     AND g.week_start = :weekStart
+    JOIN weekly_snapshot_users u 
+      ON u.user_id = g.user_id
+      ANd u.week_start = :weekStart
+    WHERE u.role <> 'ADMIN'
+    GROUP BY g.goal_id, g.category
     """, nativeQuery = true)
     List<GoalProgressResult> calculateGoalProgressByCategory(
             @Param("weekStart") LocalDate weekStart,
@@ -228,15 +243,16 @@ public interface WeeklyMetricRepository extends JpaRepository<WeeklyMetric, Inte
     planned_tasks AS (
         -- 1. 현재 존재하는 예정 태스크
         SELECT
-            t.id AS task_id,
+            t.task_id AS task_id,
             t.goal_id,
             CASE
                 WHEN l.action = 'complete' THEN 1
                 ELSE 0
             END AS is_completed
-        FROM tasks t
-        LEFT JOIN last_status l ON l.task_id = t.id
-        WHERE t.task_date >= :weekStart
+        FROM weekly_snapshot_tasks t
+        LEFT JOIN last_status l ON l.task_id = t.task_id
+        WHERE t.week_start = :weekStart
+          AND t.task_date >= :weekStart
           AND t.task_date < :weekEndDate
 
         UNION ALL
@@ -252,29 +268,36 @@ public interface WeeklyMetricRepository extends JpaRepository<WeeklyMetric, Inte
           AND l.task_date < :weekEndDate
           AND NOT EXISTS (
               SELECT 1
-              FROM tasks t
-              WHERE t.id = l.task_id
+              FROM weekly_snapshot_tasks t
+              WHERE t.task_id = l.task_id
+                AND t.week_start = :weekStart
           )
     )
     SELECT
-        g.id AS "goalId",
+        g.goal_id AS "goalId",
         COUNT(*) AS "plannedCount",
         SUM(p.is_completed) AS "completedCount",
         EXISTS (
             SELECT 1
-            FROM study_member_goals smg
-            WHERE smg.goal_id = g.id
+            FROM weekly_snapshot_study_member_goals smg
+            WHERE smg.goal_id = g.goal_id
+              AND smg.week_start = :weekStart
         ) AS "linked"
     FROM planned_tasks p
-    JOIN goals g ON g.id = p.goal_id
-    JOIN users u ON u.id = g.user_id
-    WHERE LOWER(CAST(u.role AS TEXT)) <> 'admin'
+    JOIN weekly_snapshot_goals g 
+      ON g.goal_id = p.goal_id
+      AND g.week_start = :weekStart
+    JOIN weekly_snapshot_users u 
+      ON u.user_id = g.user_id
+      AND u.week_start = :weekStart
+    WHERE u.role <> 'ADMIN'
       AND EXISTS (
           SELECT 1
-          FROM study_members sm
-          WHERE sm.user_id = u.id
+          FROM weekly_snapshot_study_members sm
+          WHERE sm.user_id = u.user_id
+            AND sm.week_start = :weekStart
       )
-    GROUP BY g.id
+    GROUP BY g.goal_id
     """, nativeQuery = true)
     List<GoalProgressByLinkResult> calculateGoalProgressByLink(
             @Param("weekStart") LocalDate weekStart,
@@ -307,14 +330,21 @@ public interface WeeklyMetricRepository extends JpaRepository<WeeklyMetric, Inte
         sm.study_id AS "studyId",
         COUNT(a.user_id) AS "numerator",
         COUNT(*) AS "denominator"
-    FROM study_members sm
-    JOIN users u ON u.id = sm.user_id
-    LEFT JOIN achieved_users a ON a.user_id = sm.user_id
-    WHERE LOWER(CAST(u.role AS TEXT)) <> 'admin'
+    FROM weekly_snapshot_study_members sm
+    JOIN weekly_snapshot_users u 
+      ON u.user_id = sm.user_id
+      AND u.week_start = sm.week_start
+    LEFT JOIN achieved_users a 
+      ON a.user_id = sm.user_id
+    WHERE sm.week_start = :weekStart
+      AND u.role <> 'ADMIN'
     GROUP BY sm.study_id
     """, nativeQuery = true)
     List<StudyActiveMemberResult> calculateStudyActiveMemberRate(
+            @Param("weekStart") LocalDate weekStart,
             @Param("weekStartTime") LocalDateTime weekStartTime,
             @Param("weekEnd") LocalDateTime weekEnd
     );
+
+    void deleteByWeekStart(LocalDate weekStart);
 }

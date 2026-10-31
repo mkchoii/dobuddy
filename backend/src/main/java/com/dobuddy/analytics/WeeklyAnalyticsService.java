@@ -1,7 +1,6 @@
 package com.dobuddy.analytics;
 
 import com.dobuddy.analytics.dto.*;
-import com.dobuddy.study.StudyMemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,6 @@ public class WeeklyAnalyticsService {
 
     private final WeeklyUserStatusRepository weeklyUserStatusRepository;
     private final WeeklyMetricRepository weeklyMetricRepository;
-    private final StudyMemberRepository studyMemberRepository;
 
     @Transactional
     public void calculateWeeklyUserStatus(LocalDate weekStart) {
@@ -31,6 +29,7 @@ public class WeeklyAnalyticsService {
 
         // 사용자별 파워 유저 여부
         List<WeeklyPowerResult> results = weeklyUserStatusRepository.calculateWeeklyPower(
+                weekStart,
                 weekStartTime,
                 weekEnd
         );
@@ -49,15 +48,14 @@ public class WeeklyAnalyticsService {
     @Transactional
     public void calculatePowerUsers(LocalDate weekStart) {
 
-        List<WeeklyUserStatus> powerUsers = weeklyUserStatusRepository.findByWeekStartAndIsPowerTrue(weekStart);
-
         // 전체 파워 유저 수
-        long allCount = powerUsers.size();
+        long allCount = weeklyUserStatusRepository
+                .findByWeekStartAndIsPowerTrue(weekStart)
+                .size();
 
         // 스터디 가입 파워 유저 수
-        long joinedCount = powerUsers.stream()
-                .filter(status -> studyMemberRepository.existsByUserId(status.getUserId()))
-                .count();
+        long joinedCount = weeklyUserStatusRepository
+                .countStudyJoinedPowerUsers(weekStart);
 
         // 스터디 미가입 파워 유저 수
         long notJoinedCount = allCount - joinedCount;
@@ -92,6 +90,7 @@ public class WeeklyAnalyticsService {
 
         // 사용자별 달성일 수 조회
         List<WeeklyAchievementDaysResult> results = weeklyUserStatusRepository.calculateAchievementDays(
+                weekStart,
                 weekStartTime,
                 weekEnd
         );
@@ -159,6 +158,7 @@ public class WeeklyAnalyticsService {
 
         // 접속 유저 수 및 달성 유저 수 집계
         ActiveUserRateResult result = weeklyMetricRepository.calculateActiveUserRate(
+                weekStart,
                 weekStartTime,
                 weekEnd,
                 activeSince
@@ -353,6 +353,7 @@ public class WeeklyAnalyticsService {
 
         List<StudyActiveMemberResult> results =
                 weeklyMetricRepository.calculateStudyActiveMemberRate(
+                        weekStart,
                         weekStartTime,
                         weekEnd
                 );

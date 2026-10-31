@@ -49,16 +49,18 @@ public interface WeeklyUserStatusRepository extends JpaRepository<WeeklyUserStat
             GROUP BY user_id
         )
         SELECT
-            u.id AS "userId",
+            u.user_id AS "userId",
             (COALESCE(a.day_count, 0) >= 2) AS "isPower"
         FROM weekly_users wu
-        JOIN users u
-            ON wu.user_id = u.id
+        JOIN weekly_snapshot_users u
+            ON wu.user_id = u.user_id
+            AND u.week_start = :weekStart
         LEFT JOIN achievement_days a
-            ON u.id = a.user_id
-        WHERE LOWER(CAST(u.role AS TEXT)) <> 'admin'
+            ON u.user_id = a.user_id
+        WHERE u.role <> 'ADMIN'
         """, nativeQuery = true)
     List<WeeklyPowerResult> calculateWeeklyPower(
+            @Param("weekStart") LocalDate weekStart,
             @Param("weekStartTime") LocalDateTime weekStartTime,
             @Param("weekEnd") LocalDateTime weekEnd
     );
@@ -83,15 +85,36 @@ public interface WeeklyUserStatusRepository extends JpaRepository<WeeklyUserStat
         l.user_id AS "userId",
         COUNT(DISTINCT l.occurred_at::date) AS "dayCount"
     FROM latest_log l
-    JOIN users u ON u.id = l.user_id
+    JOIN weekly_snapshot_users u 
+        ON u.user_id = l.user_id
+        AND u.week_start = :weekStart
     WHERE l.rn = 1
       AND l.action = 'complete'
       AND l.occurred_at >= :weekStartTime
-      AND LOWER(CAST(u.role AS TEXT)) <> 'admin'
+      AND u.role <> 'ADMIN'
     GROUP BY l.user_id
     """, nativeQuery = true)
     List<WeeklyAchievementDaysResult> calculateAchievementDays(
+            @Param("weekStart") LocalDate weekStart,
             @Param("weekStartTime") LocalDateTime weekStartTime,
             @Param("weekEnd") LocalDateTime weekEnd
     );
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM weekly_user_status wus
+    WHERE wus.week_start = :weekStart
+      AND wus.is_power = true
+      AND EXISTS (
+          SELECT 1
+          FROM weekly_snapshot_study_members sm
+          WHERE sm.user_id = wus.user_id
+            AND sm.week_start = :weekStart
+      )
+    """, nativeQuery = true)
+    long countStudyJoinedPowerUsers(
+            @Param("weekStart") LocalDate weekStart
+    );
+
+    void deleteByWeekStart(LocalDate weekStart);
 }
