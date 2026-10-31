@@ -24,6 +24,14 @@ public class WeeklyScheduler {
         LocalDate lastWeekStart = today
                 .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
                 .minusWeeks(1);
+
         weeklyAnalyticsService.calculateWeeklyUserStatus(lastWeekStart);
+        weeklyAnalyticsService.calculatePowerUsers(lastWeekStart);
+        weeklyAnalyticsService.calculateAchievementDays(lastWeekStart);
+        weeklyAnalyticsService.calculateActiveUserRate(lastWeekStart);
+        weeklyAnalyticsService.calculateProgressRate(lastWeekStart);
+        weeklyAnalyticsService.calculateGoalProgressByCategory(lastWeekStart);
+        weeklyAnalyticsService.calculateGoalProgressByLink(lastWeekStart);
+        weeklyAnalyticsService.calculateStudyActiveMemberRate(lastWeekStart);
     }
 }
