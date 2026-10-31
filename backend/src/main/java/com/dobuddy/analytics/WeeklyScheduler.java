@@ -16,14 +16,14 @@ public class WeeklyScheduler {
     private final WeeklyAnalyticsService weeklyAnalyticsService;
 
     // 월요일 자정에 실행 : 0 0 0 * * MON
-    @Scheduled(cron = "0 0 0 * * MON", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 22 * * SAT", zone = "Asia/Seoul")
 
     public void aggregateWeekly() {
 
         LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
         LocalDate lastWeekStart = today
-                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-                .minusWeeks(1);
+                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+                //.minusWeeks(1);
 
         weeklyAnalyticsService.calculateWeeklyUserStatus(lastWeekStart);
         weeklyAnalyticsService.calculatePowerUsers(lastWeekStart);
