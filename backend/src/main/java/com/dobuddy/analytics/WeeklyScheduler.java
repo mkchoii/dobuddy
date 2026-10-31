@@ -22,11 +22,11 @@ public class WeeklyScheduler {
     private static final long RETRY_DELAY = 1 * 60 * 1000L;
 
     // 월요일 자정에 실행 : 0 0 0 * * MON
-    @Scheduled(cron = "0 0 0 * * MON", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 50 0 * * SUN", zone = "Asia/Seoul")
     public void runWeeklyAnalytics() {
 
         LocalDate weekStart = LocalDate.now(ZoneId.of("Asia/Seoul"))
-                .minusWeeks(1)
+                //.minusWeeks(1)
                 .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 
         // 스냅샷 저장
