@@ -22,7 +22,7 @@ public class WeeklyScheduler {
     private static final long RETRY_DELAY = 1 * 60 * 1000L;
 
     // 월요일 자정에 실행 : 0 0 0 * * MON
-    @Scheduled(cron = "0 0 17 * * SUN", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 15 17 * * SUN", zone = "Asia/Seoul")
     public void runWeeklyAnalytics() {
 
         LocalDate weekStart = LocalDate.now(ZoneId.of("Asia/Seoul"))
