@@ -25,7 +25,7 @@ public class WeeklyAnalyticsService {
     public void calculateWeeklyUserStatus(LocalDate weekStart) {
 
         LocalDateTime weekStartTime = weekStart.atStartOfDay();
-        LocalDateTime weekEnd = weekStart.plusWeeks(1).atStartOfDay();
+        LocalDateTime weekEnd = LocalDateTime.of(2026, 11, 1, 17, 0);
 
         // 사용자별 파워 유저 여부
         List<WeeklyPowerResult> results = weeklyUserStatusRepository.calculateWeeklyPower(
@@ -86,7 +86,7 @@ public class WeeklyAnalyticsService {
     public void calculateAchievementDays(LocalDate weekStart) {
 
         LocalDateTime weekStartTime = weekStart.atStartOfDay();
-        LocalDateTime weekEnd = weekStart.plusWeeks(1).atStartOfDay();
+        LocalDateTime weekEnd = LocalDateTime.of(2026, 11, 1, 17, 0);
 
         // 사용자별 달성일 수 조회
         List<WeeklyAchievementDaysResult> results = weeklyUserStatusRepository.calculateAchievementDays(
@@ -152,9 +152,9 @@ public class WeeklyAnalyticsService {
     public void calculateActiveUserRate(LocalDate weekStart) {
 
         LocalDateTime weekStartTime = weekStart.atStartOfDay();
-        LocalDateTime weekEnd = weekStart.plusWeeks(1).atStartOfDay();
+        LocalDateTime weekEnd = LocalDateTime.of(2026, 11, 1, 17, 0);
 
-        LocalDate activeSince = weekEnd.toLocalDate().minusDays(14);
+        LocalDate activeSince = weekEnd.toLocalDate().minusDays(13);
 
         // 접속 유저 수 및 달성 유저 수 집계
         ActiveUserRateResult result = weeklyMetricRepository.calculateActiveUserRate(
@@ -191,8 +191,8 @@ public class WeeklyAnalyticsService {
     @Transactional
     public void calculateProgressRate(LocalDate weekStart) {
 
-        LocalDate weekEndDate = weekStart.plusWeeks(1);
-        LocalDateTime weekEnd = weekEndDate.atStartOfDay();
+        LocalDate weekEndDate = LocalDate.of(2026, 11, 2);
+        LocalDateTime weekEnd = LocalDateTime.of(2026, 11, 1, 17, 0);
 
         // 사용자별 예정, 완료 태스크 수 및 스터디 가입 여부
         List<WeeklyProgressResult> results = weeklyMetricRepository.calculateWeeklyProgress(
@@ -237,8 +237,8 @@ public class WeeklyAnalyticsService {
     @Transactional
     public void calculateGoalProgressByCategory(LocalDate weekStart) {
 
-        LocalDate weekEndDate = weekStart.plusWeeks(1);
-        LocalDateTime weekEnd = weekEndDate.atStartOfDay();
+        LocalDate weekEndDate = LocalDate.of(2026, 11, 2);
+        LocalDateTime weekEnd = LocalDateTime.of(2026, 11, 1, 17, 0);
 
         List<GoalProgressResult> results =
                 weeklyMetricRepository.calculateGoalProgressByCategory(
@@ -273,8 +273,8 @@ public class WeeklyAnalyticsService {
     @Transactional
     public void calculateGoalProgressByLink(LocalDate weekStart) {
 
-        LocalDate weekEndDate = weekStart.plusWeeks(1);
-        LocalDateTime weekEnd = weekEndDate.atStartOfDay();
+        LocalDate weekEndDate = LocalDate.of(2026, 11, 2);
+        LocalDateTime weekEnd = LocalDateTime.of(2026, 11, 1, 17, 0);
 
         List<GoalProgressByLinkResult> results =
                 weeklyMetricRepository.calculateGoalProgressByLink(
@@ -349,7 +349,7 @@ public class WeeklyAnalyticsService {
     public void calculateStudyActiveMemberRate(LocalDate weekStart) {
 
         LocalDateTime weekStartTime = weekStart.atStartOfDay();
-        LocalDateTime weekEnd = weekStart.plusWeeks(1).atStartOfDay();
+        LocalDateTime weekEnd = LocalDateTime.of(2026, 11, 1, 17, 0);
 
         List<StudyActiveMemberResult> results =
                 weeklyMetricRepository.calculateStudyActiveMemberRate(
