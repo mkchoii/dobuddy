@@ -83,7 +83,7 @@ public class WeeklySnapshotService {
         jdbcTemplate.update("""
             INSERT INTO weekly_snapshot_runs
                 (week_start, status, captured_at, error_message)
-            VALUES (?, 'SUCCESS', CURRENT_TIMESTAMP, NULL)
+            VALUES (?, 'SUCCESS', CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Seoul', NULL)
             ON CONFLICT (week_start)
             DO UPDATE SET
                 status = 'SUCCESS',
