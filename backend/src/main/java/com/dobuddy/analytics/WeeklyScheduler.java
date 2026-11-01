@@ -22,7 +22,7 @@ public class WeeklyScheduler {
     private static final long RETRY_DELAY = 1 * 60 * 1000L;
 
     // 월요일 자정에 실행 : 0 0 0 * * MON
-    @Scheduled(cron = "0 10 1 * * MON", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 0 * * MON", zone = "Asia/Seoul")
     public void runWeeklyAnalytics() {
 
         LocalDate weekStart = LocalDate.now(ZoneId.of("Asia/Seoul"))
@@ -41,12 +41,6 @@ public class WeeklyScheduler {
 
         for (int attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
             try {
-                // test : 첫 번째, 두 번째 시도에서 강제 실패
-
-                if (attempt < 3) {
-                    throw new RuntimeException("스냅샷 저장 실패 테스트");
-                }
-
                 snapshotService.saveSnapshot(weekStart);
 
                 log.info("스냅샷 저장 성공: weekStart={}, attempt={}",
