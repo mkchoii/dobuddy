@@ -148,7 +148,6 @@ public class AuthService {
             );
         }
 
-        boolean isFirstLogin = user.getAccessAt() == null;
         user.updateAccessAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")));
         userRepository.save(user);
 
@@ -157,8 +156,7 @@ public class AuthService {
         return new LoginResponse(
                 user.getId(),
                 user.getRole(),
-                hasGoal,
-                isFirstLogin
+                hasGoal
         );
     }
 

@@ -50,7 +50,6 @@ function PasswordLoginPage() {
             // 로그인 성공 후 사용자 ID 설정
             setAmplitudeUserId(data.userId);
             trackEvent('Login_Succeeded', {
-                is_first_login: data.isFirstLogin,
                 login_attempt_count: loginAttemptCount.current
             });
 

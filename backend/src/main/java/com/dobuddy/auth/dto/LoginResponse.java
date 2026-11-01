@@ -12,7 +12,4 @@ public class LoginResponse {
     private Integer userId;
     private Role role;
     private boolean hasGoal;
-
-    @JsonProperty("isFirstLogin")
-    private boolean firstLogin;
 }
