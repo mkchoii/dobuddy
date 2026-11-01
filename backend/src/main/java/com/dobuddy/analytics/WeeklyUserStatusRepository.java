@@ -19,13 +19,7 @@ public interface WeeklyUserStatusRepository extends JpaRepository<WeeklyUserStat
             Integer userId
     );
     @Query(value = """
-        WITH weekly_users AS (
-            SELECT DISTINCT user_id
-            FROM task_completion_log
-            WHERE occurred_at >= :weekStartTime
-                AND occurred_at < :weekEnd
-        ),
-        latest_log AS (
+        WITH latest_log AS (
             SELECT
                 task_id,
                 user_id,
@@ -51,13 +45,11 @@ public interface WeeklyUserStatusRepository extends JpaRepository<WeeklyUserStat
         SELECT
             u.user_id AS "userId",
             (COALESCE(a.day_count, 0) >= 2) AS "isPower"
-        FROM weekly_users wu
-        JOIN weekly_snapshot_users u
-            ON wu.user_id = u.user_id
-            AND u.week_start = :weekStart
+        FROM weekly_snapshot_users u
         LEFT JOIN achievement_days a
             ON u.user_id = a.user_id
-        WHERE u.role <> 'ADMIN'
+        WHERE u.week_start = :weekStart
+          AND u.role <> 'ADMIN'
         """, nativeQuery = true)
     List<WeeklyPowerResult> calculateWeeklyPower(
             @Param("weekStart") LocalDate weekStart,
