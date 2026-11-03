@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://dobuddy-3rdp.onrender.com/:path*"
+      "destination": "https://dobuddy-prod.onrender.com/:path*"
     },
     {
       "source": "/(.*)",
