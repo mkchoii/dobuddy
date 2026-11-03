@@ -36,6 +36,7 @@ public class GoalService {
         if (goalCount >= 3) {
             throw new BusinessException(
                     HttpStatus.BAD_REQUEST,
+                    "GOAL_LIMIT",
                     "세부목표는 최대 3개까지만 설정할 수 있습니다."
             );
         }
@@ -43,6 +44,7 @@ public class GoalService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(
                         HttpStatus.NOT_FOUND,
+                        "USER_NOT_FOUND",
                         "사용자를 찾을 수 없습니다."
                 ));
 

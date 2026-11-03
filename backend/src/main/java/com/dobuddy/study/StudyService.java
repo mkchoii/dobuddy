@@ -229,12 +229,14 @@ public class StudyService {
         Study study = studyRepository.findByIdForUpdate(studyId)
                 .orElseThrow(() -> new BusinessException(
                         HttpStatus.NOT_FOUND,
+                        "STUDY_NOT_FOUND",
                         "스터디를 찾을 수 없습니다."
                 ));
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(
                         HttpStatus.NOT_FOUND,
+                        "USER_NOT_FOUND",
                         "사용자를 찾을 수 없습니다."
                 ));
 
@@ -243,6 +245,7 @@ public class StudyService {
         if (studyMemberRepository.existsByUserId(userId)) {
             throw new BusinessException(
                     HttpStatus.BAD_REQUEST,
+                    "STUDY_ALREADY_JOINED",
                     "이미 가입한 스터디가 있습니다."
             );
         }
@@ -252,6 +255,7 @@ public class StudyService {
         if (currentMembers >= study.getMaxMembers()) {
             throw new BusinessException(
                     HttpStatus.CONFLICT,
+                    "STUDY_FULL",
                     "스터디 정원이 초과되어 참여할 수 없습니다."
             );
         }
@@ -261,19 +265,34 @@ public class StudyService {
         if (goals.size() != request.getGoalIds().size()) {
             throw new BusinessException(
                     HttpStatus.BAD_REQUEST,
+                    "GOAL_NOT_FOUND",
                     "존재하지 않는 세부목표가 포함되어 있습니다."
             );
         }
 
-        boolean invalidGoal = goals.stream()
+        boolean notOwnedGoal = goals.stream()
                 .anyMatch(goal ->
-                        !goal.getUser().getId().equals(userId) || goal.getCategory() != study.getCategory()
+                        !goal.getUser().getId().equals(userId)
                 );
 
-        if (invalidGoal) {
+        if (notOwnedGoal) {
             throw new BusinessException(
                     HttpStatus.BAD_REQUEST,
-                    "연동할 수 없는 세부목표가 포함되어 있습니다."
+                    "GOAL_NOT_OWNED",
+                    "본인의 세부목표만 연동할 수 있습니다."
+            );
+        }
+
+        boolean categoryMismatch = goals.stream()
+                .anyMatch(goal ->
+                        goal.getCategory() != study.getCategory()
+                );
+
+        if (categoryMismatch) {
+            throw new BusinessException(
+                    HttpStatus.BAD_REQUEST,
+                    "GOAL_CATEGORY_MISMATCH",
+                    "스터디 카테고리와 일치하지 않는 세부목표가 포함되어 있습니다."
             );
         }
 

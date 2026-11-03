@@ -83,12 +83,17 @@ public class AuthService {
         String email = request.getEmail();
 
         if (userRepository.existsByEmail(email)) {
-            throw new BusinessException(HttpStatus.CONFLICT, "이미 가입된 이메일입니다.");
+            throw new BusinessException(
+                    HttpStatus.CONFLICT,
+                    "EMAIL_ALREADY_EXISTS",
+                    "이미 가입된 이메일입니다."
+            );
         }
 
         Invite invite = inviteRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(
                         HttpStatus.FORBIDDEN,
+                        "INVITE_NOT_FOUND",
                         "초대되지 않은 이메일입니다.")
                 );
 

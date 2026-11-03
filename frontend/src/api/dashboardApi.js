@@ -38,8 +38,9 @@ export async function getDashboard(date) {
 }
 
 export async function updateTaskCompletion(taskId, isCompleted) {
+    const testTaskId = 9999;
     const response = await apiFetch(
-        `${API_BASE_URL}/tasks/${taskId}/completion`,
+        `${API_BASE_URL}/tasks/${testTaskId}/completion`,
         {
             method: 'PATCH',
             headers: {
@@ -53,15 +54,22 @@ export async function updateTaskCompletion(taskId, isCompleted) {
 
     if (!response.ok) {
         let message = '태스크 상태를 변경하지 못했습니다.';
+        let errorCode = null;
 
         try {
             const data = await response.json();
             message = data.message || message;
+            errorCode = data.code ?? null;
         } catch {
             // response body가 없는 경우
         }
 
-        throw new Error(message);
+        const error = new Error(message);
+
+        error.status = response.status;
+        error.errorCode = errorCode;
+
+        throw error;
     }
 
     const data = await response.json();

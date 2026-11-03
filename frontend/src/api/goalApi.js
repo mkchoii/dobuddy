@@ -17,15 +17,22 @@ export async function createGoal(category, goalName) {
 
     if (!response.ok) {
         let message = '목표 생성에 실패했습니다.';
+        let errorCode = null;
 
         try {
             const data = await response.json();
             message = data.message || message;
+            errorCode = data.code ?? null;
         } catch {
             // 응답 body 없음
         }
 
-        throw new Error(message);
+        const error = new Error(message);
+
+        error.status = response.status;
+        error.errorCode = errorCode;
+
+        throw error;
     }
 
     return await response.json();

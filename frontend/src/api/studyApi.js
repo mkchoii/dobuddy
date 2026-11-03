@@ -78,8 +78,10 @@ export async function getMatchingGoals(studyId) {
 }
 
 export async function joinStudy(studyId, goalIds) {
+    // test
+    const testStudyId = 9999;
     const response = await apiFetch(
-        `${API_BASE_URL}/studies/${studyId}/members`,
+        `${API_BASE_URL}/studies/${testStudyId}/members`,
         {
             method: 'POST',
             headers: {

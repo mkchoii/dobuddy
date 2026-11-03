@@ -195,6 +195,7 @@ public class TaskService {
         Task task = taskRepository.findByIdAndGoalUserId(taskId, userId)
                 .orElseThrow(() -> new BusinessException(
                         HttpStatus.NOT_FOUND,
+                        "TASK_NOT_FOUND",
                         "태스크를 찾을 수 없습니다."
                 ));
 
@@ -203,6 +204,7 @@ public class TaskService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(
                         HttpStatus.NOT_FOUND,
+                        "USER_NOT_FOUND",
                         "사용자를 찾을 수 없습니다."
                 ));
 

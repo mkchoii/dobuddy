@@ -35,13 +35,27 @@ export async function signup(email, password) {
         }),
     });
 
-    const data = await response.json();
-
     if (!response.ok) {
-        throw new Error(data.message);
+        let message = '회원가입에 실패했습니다.';
+        let errorCode = null;
+
+        try {
+            const data = await response.json();
+            message = data.message || message;
+            errorCode = data.code ?? null;
+        } catch {
+            // response body가 없는 경우
+        }
+
+        const error = new Error(message);
+
+        error.status = response.status;
+        error.errorCode = errorCode;
+
+        throw error;
     }
 
-    return data;
+    return await response.json();
 }
 
 export async function login(email, password) {
