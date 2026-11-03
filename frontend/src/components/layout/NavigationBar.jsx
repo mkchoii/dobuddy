@@ -20,6 +20,12 @@ function NavigationBar() {
                 className={({ isActive }) =>
                     `navigation-item ${isActive ? 'active' : ''}`
                 }
+                onClick={(event) => {
+                    if (window.location.pathname === '/study') {
+                        event.preventDefault();
+                        window.location.reload();
+                    }
+                }}
             >
                 팀 스페이스
             </NavLink>
@@ -27,7 +33,7 @@ function NavigationBar() {
             <NavLink
                 to="/mypage"
                 className={({ isActive }) =>
-                    `navigation-item ${isActive ? 'active' : ''}`
+                    `navigation-item ${isActive || window.location.pathname === '/password-change' ? 'active' : ''}`
                 }
             >
                 마이페이지

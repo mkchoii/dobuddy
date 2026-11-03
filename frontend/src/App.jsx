@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import LoginEmailPage from './pages/LoginEmailPage';
 import PasswordSetupPage from './pages/PasswordSetupPage';
 import PasswordLoginPage from './pages/PasswordLoginPage';
@@ -12,10 +13,13 @@ import StudyListPage from './pages/StudyListPage';
 import AdminStudyListPage from './pages/AdminStudyListPage';
 import AdminStudyManagePage from './pages/AdminStudyManagePage';
 import AdminStudyCreatePage from './pages/AdminStudyCreatePage';
+import PageTracker from './PageTracker';
 
 function App() {
+    
     return (
         <BrowserRouter>
+            <PageTracker />
             <Routes>
                 <Route path="/" element={<Navigate to="/login" replace />} />
                 <Route path="/login" element={<LoginEmailPage />} />

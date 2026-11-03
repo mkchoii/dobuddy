@@ -7,9 +7,11 @@ import StudyCategoryFilter from '../components/study/StudyCategoryFilter';
 import StudyCard from '../components/study/StudyCard';
 import StudyGoalLinkModal from '../components/modal/StudyGoalLinkModal';
 import StudyJoinSuccessModal from '../components/modal/StudyJoinSuccessModal';
+import { handleApiError } from '../handleApiError';
 
 import './StudyListPage.css';
 import StudyAvailabilityWarningModal from '../components/modal/StudyAvailabilityWarningModal';
+import { trackApiRequestFailed, trackStudyJoinFailed, trackStudyJoinModalCanceled, trackStudyJoinSucceeded } from '../amplitude';
 
 
 function StudyListPage({ isJoined, onJoined }) {
@@ -32,8 +34,20 @@ function StudyListPage({ isJoined, onJoined }) {
 
                 const data = await getStudies(selectedCategory);
 
-                setStudies(data.studies);
+                const sortedStudies = [...data.studies].sort((a, b) => {
+                    const aAvailable = a.currentMembers < a.maxMembers;
+                    const bAvailable = b.currentMembers < b.maxMembers;
+
+                    if (aAvailable !== bAvailable) {
+                        return aAvailable ? -1 : 1;
+                    }
+
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                });
+
+                setStudies(sortedStudies);
             } catch (error) {
+                if (handleApiError(error)) return;
                 console.error(error);
             } finally {
                 setIsLoading(false);
@@ -53,6 +67,7 @@ function StudyListPage({ isJoined, onJoined }) {
             const result = await joinStudy(studyId, goalIds);
 
             if (result.joined) {
+                trackStudyJoinSucceeded(result);
                 setJoinedStudy({
                     ...selectedStudy,
                     studyId: result.studyId,
@@ -60,10 +75,30 @@ function StudyListPage({ isJoined, onJoined }) {
                 setSelectedStudy(null);
             }
         } catch (error) {
+            trackApiRequestFailed({
+                requestName: 'study_join',
+                statusCode: error.status ?? null,
+                errorCode: error.errorCode ?? null
+            });
+
+            if (handleApiError(error)) return;
+
             if (error.status === 409) {
+                trackStudyJoinFailed({
+                    failReason: 'study_full',
+                    goalIds: goalIds,
+                    category: selectedStudy.category,
+                    studyId: studyId
+                })
                 setIsAvailabilityWarningOpen(true);
                 return;
             }
+            trackStudyJoinFailed({
+                    failReason: 'server_error',
+                    goalIds: goalIds,
+                    category: selectedStudy.category,
+                    studyId: studyId
+                })
             setJoinError(error.message);
         } finally {
             setIsJoining(false);
@@ -80,10 +115,17 @@ function StudyListPage({ isJoined, onJoined }) {
             setSelectedStudy(study);
 
             if (!canJoin) {
+                trackStudyJoinModalCanceled({
+                    studyId: study.studyId,
+                    cancelReason: 'study_full',
+                    goalIds: null
+                });
+
                 setIsAvailabilityWarningOpen(true);
             }
             
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error('스터디 정원 확인 실패:', error);
             setJoinError(error.message);
         } finally {
@@ -131,7 +173,12 @@ function StudyListPage({ isJoined, onJoined }) {
                     {selectedStudy && !isAvailabilityWarningOpen && (
                         <StudyGoalLinkModal
                             study={selectedStudy}
-                            onClose={() => {
+                            onClose={(goalIds) => {
+                                trackStudyJoinModalCanceled({
+                                    studyId: selectedStudy.studyId,
+                                    cancelReason: 'popup_closed',
+                                    goalIds
+                                });
                                 setSelectedStudy(null);
                                 setJoinError('');
                             }}

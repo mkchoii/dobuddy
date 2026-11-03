@@ -35,13 +35,27 @@ export async function signup(email, password) {
         }),
     });
 
-    const data = await response.json();
-
     if (!response.ok) {
-        throw new Error(data.message);
+        let message = '회원가입에 실패했습니다.';
+        let errorCode = null;
+
+        try {
+            const data = await response.json();
+            message = data.message || message;
+            errorCode = data.code ?? null;
+        } catch {
+            // response body가 없는 경우
+        }
+
+        const error = new Error(message);
+
+        error.status = response.status;
+        error.errorCode = errorCode;
+
+        throw error;
     }
 
-    return data;
+    return await response.json();
 }
 
 export async function login(email, password) {
@@ -60,7 +74,11 @@ export async function login(email, password) {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message);
+        const error = new Error(data.message);
+        error.code = data.code;
+        error.status = response.status;
+
+        throw error;
     }
 
     return data;
@@ -86,7 +104,15 @@ export async function resetPassword(email) {
         body: JSON.stringify({ email }),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-        throw new Error('비밀번호 초기화에 실패했습니다.');
+        const error = new Error(data.message);
+        error.code = data.code;
+        error.attemptCount = data.attemptCount;
+
+        throw error;
     }
+
+    return data;
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getMatchingGoals } from '../../api/studyApi';
+import { handleApiError } from '../../handleApiError';
 
 import CategoryChip from '../CategoryChip';
 import SmallButton from '../common/SmallButton';
@@ -42,6 +43,7 @@ function StudyGoalLinkModal({
                 }
             } catch (error) {
                 if (!cancelled) {
+                    if (handleApiError(error)) return;
                     setErrorMessage(error.message);
                 }
             } finally {
@@ -59,11 +61,9 @@ function StudyGoalLinkModal({
     }, [study.studyId]);
 
     return (
-        <div className="study-goal-modal-overlay" 
-              onClick={onClose}
-        >
+        <div className="study-goal-modal-overlay" >
             <div
-                className="study-goal-modal"
+                className={`study-goal-modal ${submitError ? 'has-error' : ''}`}
                 role="dialog"
                 aria-modal="true"
                 aria-label="세부목표 연동"
@@ -72,7 +72,8 @@ function StudyGoalLinkModal({
                 <button
                     type="button"
                     className="study-goal-modal-close"
-                    onClick={onClose}
+                    onClick={() => onClose(selectedGoalIds)}
+                    disabled={isSubmitting}
                     aria-label="닫기"
                 >
                     <img src={closeIcon} alt="" />

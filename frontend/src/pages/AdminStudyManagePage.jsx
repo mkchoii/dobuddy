@@ -8,6 +8,7 @@ import {
     deleteStudyMember,
     deleteStudy
  } from '../api/studyApi';
+ import { handleApiError } from '../handleApiError';
 
 import { CATEGORIES } from '../categories';
 
@@ -24,6 +25,7 @@ import AdminStudyDeleteModal from '../components/modal/AdminStudyDeleteModal';
 
 import './AdminStudyManagePage.css';
 import './StudyListPage.css';
+import { trackStudyExpelled } from '../amplitude';
 
 function AdminStudyManagePage() {
     const { studyId } = useParams();
@@ -67,6 +69,7 @@ function AdminStudyManagePage() {
                 setCategory(data.category);
                 setMaxMembers(String(data.maxMembers));
             } catch (err) {
+                if (handleApiError(error)) return;
                 if (!cancelled) {
                     setError(err.message);
                 }
@@ -118,6 +121,7 @@ function AdminStudyManagePage() {
 
             navigate('/admin', { replace: true });
         } catch (err) {
+            if (handleApiError(error)) return;
             setError(err.message);
         } finally {
             setIsSaving(false);
@@ -136,6 +140,7 @@ function AdminStudyManagePage() {
 
             setSelectedMember(data);
         } catch (err) {
+            if (handleApiError(error)) return;
             setMemberError(err.message);
         } finally {
             setIsMemberLoading(false);
@@ -155,10 +160,12 @@ function AdminStudyManagePage() {
         try {
             setIsDeleting(true);
 
-            await deleteStudyMember(
+            const data = await deleteStudyMember(
                 studyId,
                 deleteTarget.studyMemberId
             );
+
+            trackStudyExpelled(data);
 
             setStudy((prev) => ({
                 ...prev,
@@ -171,6 +178,7 @@ function AdminStudyManagePage() {
 
             setDeleteTarget(null);
         } catch (err) {
+            if (handleApiError(err)) return;
             alert(err.message);
         } finally {
             setIsDeleting(false);
@@ -185,6 +193,7 @@ function AdminStudyManagePage() {
             await deleteStudy(studyId);
             navigate('/admin', { replace: true });
         } catch (err) {
+            if (handleApiError(error)) return;
             alert(err.message);
         } finally {
             setIsStudyDeleting(false);

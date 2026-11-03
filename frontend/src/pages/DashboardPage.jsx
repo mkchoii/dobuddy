@@ -22,6 +22,8 @@ import {
 } from '../api/dashboardApi';
 
 import './DashboardPage.css';
+import { trackApiRequestFailed, trackGoalCreated, trackGoalDeleted, trackGoalSummaryCardViewed, trackGoalUpdated, trackTaskCompleted, trackTaskCompletedCanceled, trackTaskCreated, trackTaskDeleted, trackTaskUpdated } from '../amplitude';
+import { handleApiError } from '../handleApiError';
 
 function DashboardPage() {
     const [dashboard, setDashboard] = useState(null);
@@ -30,6 +32,7 @@ function DashboardPage() {
     const [isGoalManagementOpen, setIsGoalManagementOpen] = useState(false);
     const [finalGoalInput, setFinalGoalInput] = useState('');
     const [selectedGoalId, setSelectedGoalId] = useState(null);
+    const [error, setError] = useState(null);
 
     // 대시보드 조회 및 날짜 선택
     const loadDashboard = async (date) => {
@@ -37,14 +40,16 @@ function DashboardPage() {
             const data = await getDashboard(date);
             setDashboard(data);
         } catch (error) {
+            if (handleApiError(error)) return;
+
             console.error(error);
+            setError('대시보드를 불러오지 못했습니다.');
         }
     };
 
     useEffect(() => {
         loadDashboard();
     }, []);
-
 
     const handleSelectDate = (date) => {
         loadDashboard(date);
@@ -53,6 +58,8 @@ function DashboardPage() {
     // 상단 카드 더보기
     const handleClickMore = () => {
         if (topCardMode === 'finalGoal') {
+            trackGoalSummaryCardViewed();
+            
             const goals = dashboard.goalProgress;
 
             if (goals.length > 0) {
@@ -105,6 +112,7 @@ function DashboardPage() {
             setFinalGoalInput('');
             setIsFinalGoalEditModalOpen(false);
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
         }
     };
@@ -116,6 +124,12 @@ function DashboardPage() {
                 taskId,
                 !isCompleted
             );
+
+            if (data.isNewlyCompleted) {
+                trackTaskCompleted(data);
+            } else if (data.isNewlyCanceled) {
+                trackTaskCompletedCanceled(data);
+            }
 
             setDashboard((prev) => ({
                 ...prev,
@@ -138,14 +152,30 @@ function DashboardPage() {
                 })),
             }));
         } catch (error) {
+            trackApiRequestFailed({
+                requestName: 'task_complete',
+                statusCode: error.status ?? null,
+                errorCode: error.errorCode ?? null
+            });
+            if (handleApiError(error)) return;
             console.error(error);
         }
     };
 
     // 태스크 수정
     const handleEditTask = async (taskId, content) => {
+        const originalTask = dashboard.goals
+            .flatMap(goal => goal.tasks)
+            .find(task => task.taskId === taskId);
+
+        if (originalTask && content === originalTask.content) {
+            return true; 
+        }
+
         try {
             const data = await updateTask(taskId, content);
+
+            trackTaskUpdated(data);
 
             setDashboard((prev) => ({
                 ...prev,
@@ -164,6 +194,7 @@ function DashboardPage() {
 
             return true;
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
             return false;
         }
@@ -173,6 +204,8 @@ function DashboardPage() {
     const handleDeleteTask = async (taskId) => {
         try {
             const data = await deleteTask(taskId);
+
+            trackTaskDeleted(data);
 
             setDashboard((prev) => ({
                 ...prev,
@@ -192,6 +225,7 @@ function DashboardPage() {
 
             return true;
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
             return false;
         }
@@ -209,6 +243,8 @@ function DashboardPage() {
                 taskDate,
                 content
             );
+
+            trackTaskCreated(data);
 
             setDashboard((prev) => ({
                 ...prev,
@@ -233,6 +269,7 @@ function DashboardPage() {
 
             return true;
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
             return false;
         }
@@ -241,10 +278,14 @@ function DashboardPage() {
     // 세부 목표 생성
     const handleCreateGoal = async (category, goalName) => {
         try {
-            const createdGoal = await createGoal(
-                category,
-                goalName
-            );
+            const createdGoal = await createGoal(category,goalName);
+
+            const goalCategories = [
+                ...dashboard.goals.map(goal => goal.category),
+                createdGoal.category
+            ];
+
+            trackGoalCreated(createdGoal, goalCategories);
 
             setDashboard((prev) => ({
                 ...prev,
@@ -270,6 +311,12 @@ function DashboardPage() {
 
             return true;
         } catch (error) {
+            trackApiRequestFailed({
+                requestName: 'goal_create',
+                statusCode: error.status ?? null,
+                errorCode: error.errorCode ?? null
+            });
+            if (handleApiError(error)) return;
             console.error(error);
             return false;
         }
@@ -282,10 +329,19 @@ function DashboardPage() {
         goalName
     ) => {
         try {
-            const updatedGoal = await updateGoal(goalId, {
+            const updatedGoal = await updateGoal(
+                goalId, {
                 category,
                 goalName,
             });
+
+            const goalCategories = dashboard.goals.map(goal => 
+                goal.goalId === goalId 
+                ? updatedGoal.category
+                : goal.category
+            );
+
+            trackGoalUpdated(updatedGoal, goalCategories);
 
             setDashboard((prev) => ({
                 ...prev,
@@ -313,6 +369,7 @@ function DashboardPage() {
 
             return true;
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
             return false;
         }
@@ -321,7 +378,13 @@ function DashboardPage() {
     // 세부 목표 삭제
     const handleDeleteGoal = async (goalId) => {
         try {
-            await deleteGoal(goalId);
+            const data = await deleteGoal(goalId);
+
+            const remainingGoals = dashboard.goals.filter(
+                goal => goal.goalId !== goalId
+            );
+
+            trackGoalDeleted(data, remainingGoals.map(goal => goal.category));
 
             setDashboard((prev) => ({
                 ...prev,
@@ -337,10 +400,15 @@ function DashboardPage() {
 
             return true;
         } catch (error) {
+            if (handleApiError(error)) return;
             console.error(error);
             return false;
         }
     };
+
+    if (error) {
+        return <div claassName="dashboard-error">{error}</div>;
+    }
 
     if (!dashboard) {
         return <div className="dashboard-loading">대시보드를 불러오는 중입니다...</div>;

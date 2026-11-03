@@ -72,7 +72,8 @@ function StudyMemberDetailModal({
                                 size='small'
                             />
                             <div className="study-member-modal-tasks">
-                                {(goal.tasks || []).map((task) => (
+                                {(goal.tasks || [])
+                                .map((task) => (
                                     <div
                                         key={task.taskId}
                                         className={`study-member-modal-task ${

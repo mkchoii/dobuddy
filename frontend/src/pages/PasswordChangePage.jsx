@@ -8,6 +8,7 @@ import PasswordChangeCompleteModal from '../components/modal/PasswordChangeCompl
 
 import { getMe, changePassword } from '../api/userApi';
 import { profileImages } from '../assets/profile/profileImages';
+import { handleApiError } from '../handleApiError';
 
 import './PasswordChangePage.css';
 
@@ -28,6 +29,7 @@ function PasswordChangePage() {
                 const data = await getMe();
                 setUser(data);
             } catch (error) {
+                if (handleApiError(error)) return;
                 console.error(error);
             }
         };
@@ -58,6 +60,7 @@ function PasswordChangePage() {
             setIsCompletePopupOpen(true);
 
         } catch (error) {
+            if (handleApiError(error)) return;
             setCurrentPinValue('');
             setNewPinValue('');
             
@@ -91,67 +94,68 @@ function PasswordChangePage() {
             : '';
 
     return (
-        <div className="password-change-page">
-            <div className="password-change-container">
+        <>
+            <UserHeader />
+            <div className="password-change-page">
+                <div className="password-change-container">
 
-                <UserHeader />
+                    <main className="password-change-content">
 
-                <main className="password-change-content">
-
-                    <img
-                        className="password-change-profile-image"
-                        src={
-                            profileImages[user?.profileImageId]
-                            ?? profileImages[1]
-                        }
-                        alt="프로필"
-                    />
-
-                    <div className="password-change-profile-info">
-                        <p className="password-change-nickname">
-                            {user?.nickname ?? ''}
-                        </p>
-
-                        <p className="password-change-email">
-                            {user?.email ?? ''}
-                        </p>
-                    </div>
-
-                    <div className="password-change-form">
-
-                        <PasswordInput
-                            value={currentPinValue}
-                            onChange={handleCurrentPinChange}
-                            onClick={handleInputClick}
-                            placeholder="기존 비밀번호 입력"
-                            errorMessage={currentPasswordError}
+                        <img
+                            className="password-change-profile-image"
+                            src={
+                                profileImages[user?.profileImageId]
+                                ?? profileImages[1]
+                            }
+                            alt="프로필"
                         />
 
-                        <PasswordInput
-                            value={newPinValue}
-                            onChange={handleNewPinChange}
-                            onClick={handleInputClick}
-                            placeholder="새 비밀번호 입력(숫자 4자리)"
-                            errorMessage={newPasswordError}
-                        />
+                        <div className="password-change-profile-info">
+                            <p className="password-change-nickname">
+                                {user?.nickname ?? ''}
+                            </p>
 
-                        <Button
-                            onClick={handleSubmit}
-                            disabled={newPinValue.length < 4}
-                        >
-                            확인
-                        </Button>
+                            <p className="password-change-email">
+                                {user?.email ?? ''}
+                            </p>
+                        </div>
 
-                    </div>
+                        <div className="password-change-form">
 
-                </main>
+                            <PasswordInput
+                                value={currentPinValue}
+                                onChange={handleCurrentPinChange}
+                                onClick={handleInputClick}
+                                placeholder="기존 비밀번호 입력"
+                                errorMessage={currentPasswordError}
+                            />
 
-                {isCompletePopupOpen && (
-                    <PasswordChangeCompleteModal onComplete={handleComplete} />
-                )}
+                            <PasswordInput
+                                value={newPinValue}
+                                onChange={handleNewPinChange}
+                                onClick={handleInputClick}
+                                placeholder="새 비밀번호 입력(숫자 4자리)"
+                                errorMessage={newPasswordError}
+                            />
 
+                            <Button
+                                onClick={handleSubmit}
+                                disabled={newPinValue.length < 4}
+                            >
+                                확인
+                            </Button>
+
+                        </div>
+
+                    </main>
+
+                    {isCompletePopupOpen && (
+                        <PasswordChangeCompleteModal onComplete={handleComplete} />
+                    )}
+
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 

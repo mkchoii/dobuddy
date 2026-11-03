@@ -10,6 +10,8 @@ import { createGoal } from '../api/goalApi';
 
 import './GoalSettingPage.css';
 import './AuthPage.css';
+import { trackGoalCreated, trackApiRequestFailed } from '../amplitude';
+import { handleApiError } from '../handleApiError';
 
 function GoalSettingPage() {
     const navigate = useNavigate();
@@ -43,14 +45,21 @@ function GoalSettingPage() {
 
     const handleComplete = async () => {
         try {
-            await createGoal(category, goalName);
+            const data = await createGoal(category, goalName);
+
+            trackGoalCreated(data, [data.category]);
 
             navigate('/signup-complete', {
-                state: {
-                    nickname: nickname,
-                },
+                state: {nickname: nickname},
+                replace: true
             });
         } catch (error) {
+            trackApiRequestFailed({
+                requestName: 'goal_create',
+                statusCode: error.status ?? null,
+                errorCode: error.errorCode ?? null
+            });
+            if (handleApiError(error)) return;
             console.error(error);
         }
     };
