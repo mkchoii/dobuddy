@@ -226,6 +226,11 @@ public class StudyService {
     @Transactional
     public StudyJoinResponse joinStudy(Integer userId, Integer studyId, StudyJoinRequest request) {
 
+        // test
+        if (studyId.equals(9999)) {
+            throw new RuntimeException("스터디 가입 오류 테스트");
+        }
+
         Study study = studyRepository.findByIdForUpdate(studyId)
                 .orElseThrow(() -> new BusinessException(
                         HttpStatus.NOT_FOUND,

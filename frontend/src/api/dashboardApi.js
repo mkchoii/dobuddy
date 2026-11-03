@@ -38,9 +38,8 @@ export async function getDashboard(date) {
 }
 
 export async function updateTaskCompletion(taskId, isCompleted) {
-    const testTaskId = 9999;
     const response = await apiFetch(
-        `${API_BASE_URL}/tasks/${testTaskId}/completion`,
+        `${API_BASE_URL}/tasks/${taskId}/completion`,
         {
             method: 'PATCH',
             headers: {
