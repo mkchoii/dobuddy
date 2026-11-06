@@ -35,7 +35,7 @@ public class InviteController {
 
     @PostMapping("/invites")
     public ResponseEntity<Void> createInvite(
-            @RequestHeader(value = "X_API_KEY", required = false) String key,
+            @RequestHeader(value = "X-API-KEY", required = false) String key,
             @RequestBody InviteCreateRequest request
     ) {
 
@@ -47,7 +47,7 @@ public class InviteController {
 
     @PatchMapping("/invites/sent")
     public ResponseEntity<Void> updateInvitedAt(
-            @RequestHeader(value = "X_API_KEY", required = false) String key,
+            @RequestHeader(value = "X-API-KEY", required = false) String key,
             @RequestBody InviteSentRequest request
     ) {
 
