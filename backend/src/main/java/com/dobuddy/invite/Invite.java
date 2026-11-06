@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Getter
 @Entity
@@ -26,4 +27,18 @@ public class Invite {
     @Enumerated(EnumType.STRING)
     @Column
     private Channel channel;
+
+    public Invite(String email, Channel channel) {
+        this.email = email;
+        this.channel = channel;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.invitedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+    }
+
+    public void updateInvitedAt(LocalDateTime invitedAt) {
+        this.invitedAt = invitedAt;
+    }
 }
