@@ -90,7 +90,7 @@ function SignupPage() {
 
   const getErrorMessage = () => {
     if (errorState === 'too_long') {
-      return '이메일은 30자 이하로 입력해주세요/';
+      return '이메일은 30자 이하로 입력해주세요';
     }
 
     if (errorState === 'invalid_format') {
