@@ -13,6 +13,17 @@ function StudyProfileCard({ study }) {
                 {study.studyName}
             </h2>
 
+            {study.openChatUrl && (
+                <a
+                    href={study.openChatUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="study-room-enter-button"
+                >
+                    스터디방 입장하기
+                </a>
+            )}
+
             <div className="study-profile-bottom">
                 {category && (
                     <CategoryChip
