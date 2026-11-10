@@ -22,7 +22,7 @@ export async function checkEmail(email) {
     return data;
 }
 
-export async function signup(email, password) {
+export async function signup({email, password, channel}) {
     const response = await fetch(`${API_BASE_URL}/signup`, {
         method: 'POST',
         headers: {
@@ -31,7 +31,8 @@ export async function signup(email, password) {
         credentials: 'include',
         body: JSON.stringify({
             email,
-            password
+            password,
+            channel
         }),
     });
 

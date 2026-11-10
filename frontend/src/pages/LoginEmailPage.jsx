@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { trackEvent } from '../amplitude';
 
@@ -12,8 +12,20 @@ function LoginEmailPage() {
     const [email, setEmail] = useState('');
     const [errorState, setErrorState] = useState('none');
     const [isLoading, setIsLoading] = useState(false);
+
     const navigate = useNavigate();
     const emailAttemptCount = useRef(0);
+
+    // sessionStorage는 페이지를 이동하거나 새로고침해도 같은 탭에서는 값이 유지됨
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const utmSource = params.get('utm_source');
+
+        if (utmSource) {
+            sessionStorage.setItem('utm_source', utmSource);
+        }
+
+    }, []);
 
     const handleEmailChange = (event) => {
         const value = event.target.value;
@@ -54,23 +66,18 @@ function LoginEmailPage() {
 
             const data = await checkEmail(email);
 
-            if (data.next === 'LOGIN' || data.next === 'SIGNUP') {
+            if (data.exists) {
                 trackEvent('Email_Succeeded', {
                     email_attempt_count: emailAttemptCount.current
                 });
 
-                navigate(
-                    data.next === 'LOGIN' 
-                    ? '/login/password' 
-                    : '/signup/password', 
+                navigate('/login/password', 
                     { 
                         state : { email: email },
                         replace: true 
                     }
                 );
-            }
-
-            if (data.next === 'NOT_INVITED') {
+            } else {
                 setErrorState('not_registered');
 
                 trackEvent('Email_Failed', {
@@ -78,7 +85,6 @@ function LoginEmailPage() {
                     fail_reason: 'email_not_registered'
                 });
             }
-
         } catch (error) {
             console.error(error);
         } finally {
@@ -127,6 +133,14 @@ function LoginEmailPage() {
                     >
                         {isLoading ? '처리 중' : '다음'}
                     </Button>
+
+                    <button 
+                        type="button" 
+                        className="auth-signup-link" 
+                        onClick={() => navigate('/signup')}>
+                            처음 방문하셨나요?
+                    </button>
+
                 </div>
 
             </div>

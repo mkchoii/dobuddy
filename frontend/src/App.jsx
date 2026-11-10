@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import LoginEmailPage from './pages/LoginEmailPage';
+import SignupPage from './pages/SignupPage';
 import PasswordSetupPage from './pages/PasswordSetupPage';
 import PasswordLoginPage from './pages/PasswordLoginPage';
 import GoalSettingPage from './pages/GoalSettingPage';
@@ -21,8 +22,9 @@ function App() {
         <BrowserRouter>
             <PageTracker />
             <Routes>
-                <Route path="/" element={<Navigate to="/login" replace />} />
+                <Route path="/" element={<Navigate to={`/login${window.location.search}`} replace />} />
                 <Route path="/login" element={<LoginEmailPage />} />
+                <Route path="/signup" element={<SignupPage />} />
                 <Route path="/signup/password" element={<PasswordSetupPage />} />
                 <Route path="/login/password" element={<PasswordLoginPage />} />
                 <Route path="/goal-setting" element={<GoalSettingPage />} />

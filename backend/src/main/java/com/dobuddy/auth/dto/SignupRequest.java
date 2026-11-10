@@ -1,5 +1,6 @@
 package com.dobuddy.auth.dto;
 
+import com.dobuddy.user.Channel;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -18,4 +19,6 @@ public class SignupRequest {
             message = "비밀번호는 숫자 4자리입니다."
     )
     private String password;
+
+    private Channel channel;
 }

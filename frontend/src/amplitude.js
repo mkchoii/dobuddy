@@ -24,6 +24,7 @@ export const getPageName = () => {
   const pageMap = {
     '/': 'LoginEmailPage',
     '/login': 'LoginEmailPage',
+    '/signup': 'SignupPage',
     '/signup/password': 'PasswordSetupPage',
     '/login/password': 'PasswordLoginPage',
     '/goal-setting': 'GoalSettingPage',

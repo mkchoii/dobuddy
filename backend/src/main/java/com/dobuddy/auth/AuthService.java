@@ -27,7 +27,6 @@ import java.security.SecureRandom;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final InviteRepository inviteRepository;
     private final PasswordEncoder passwordEncoder;
     private final GoalRepository goalRepository;
 
@@ -67,15 +66,7 @@ public class AuthService {
 
     public EmailCheckResponse checkEmail(String email) {
 
-        if (userRepository.existsByEmail(email)) {
-            return new EmailCheckResponse("LOGIN");
-        }
-
-        if (inviteRepository.existsByEmail(email)) {
-            return new EmailCheckResponse("SIGNUP");
-        }
-
-        return new EmailCheckResponse("NOT_INVITED");
+        return new EmailCheckResponse(userRepository.existsByEmail(email));
     }
 
     public SignupResponse signup(SignupRequest request) {
@@ -90,17 +81,10 @@ public class AuthService {
             );
         }
 
-        Invite invite = inviteRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException(
-                        HttpStatus.FORBIDDEN,
-                        "INVITE_NOT_FOUND",
-                        "초대되지 않은 이메일입니다.")
-                );
-
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         String nickname = generateNickname();
         int profileImageId = generateProfileImageId();
-        Channel channel = invite.getChannel();
+        Channel channel = request.getChannel();
 
         User user = new User(
                 nickname,
