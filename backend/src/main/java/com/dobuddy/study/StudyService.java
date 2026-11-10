@@ -11,6 +11,7 @@ import com.dobuddy.user.User;
 import com.dobuddy.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,18 @@ public class StudyService {
     private final UserRepository userRepository;
     private final StudyMemberGoalRepository studyMemberGoalRepository;
     private final TaskRepository taskRepository;
+
+    @Value("${open-chat.urls.LANGUAGE}")
+    private String languageOpenChatUrl;
+
+    @Value("${open-chat.urls.CERTIFICATE}")
+    private String certificateOpenChatUrl;
+
+    @Value("${open-chat.urls.INTERVIEW}")
+    private String interviewOpenChatUrl;
+
+    @Value("${open-chat.urls.PORTFOLIO}")
+    private String portfolioOpenChatUrl;
 
     public StudyResponse createStudy(StudyCreateRequest request) {
 
@@ -393,8 +406,19 @@ public class StudyService {
                 study.getCategory(),
                 studyMembers.size(),
                 study.getMaxMembers(),
+                getOpenChatUrl(study.getCategory()),
                 memberResponses
         );
+    }
+
+    private String getOpenChatUrl(Category category) {
+        return switch (category) {
+            case LANGUAGE -> languageOpenChatUrl;
+            case CERTIFICATE -> certificateOpenChatUrl;
+            case INTERVIEW -> interviewOpenChatUrl;
+            case PORTFOLIO -> portfolioOpenChatUrl;
+            default -> null;
+        };
     }
 
     public StudyMemberDetailResponse getStudyMemberDetail(Integer studyId, Integer studyMemberId, Integer userId, boolean isAdmin) {
