@@ -1,0 +1,10 @@
+.demo-layout {
+    position: relative;
+}
+
+.demo-layout-overlay > .demo-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}

@@ -177,8 +177,10 @@ public class StudyService {
         List<StudyListItemResponse> studyResponses = studies.stream()
                 .map(study -> {
                     long currentMembers = studyMemberRepository.countByStudyId(study.getId());
-                    boolean hasMatchingGoal = goalRepository.existsByUserIdAndCategory(userId, study.getCategory());
-                    boolean alreadyJoined = studyMemberRepository.existsByStudyIdAndUserId(study.getId(), userId);
+                    boolean hasMatchingGoal = userId != null
+                            && goalRepository.existsByUserIdAndCategory(userId, study.getCategory());
+                    boolean alreadyJoined = userId != null
+                            && studyMemberRepository.existsByStudyIdAndUserId(study.getId(), userId);
 
                     // 가입 가능 조건 : 현재 가입인원 정원 미만, 같은 카테고리의 세부목표 보유, 이미 가입하지 않음
                     boolean canJoin = currentMembers < study.getMaxMembers() && hasMatchingGoal && !alreadyJoined;

@@ -9,6 +9,7 @@ import Button from '../components/common/Button';
 import { login, resetPassword } from '../api/authApi';
 
 import './AuthPage.css';
+import { clearDemoSession } from '../demoDashboard';
 
 function PasswordLoginPage() {
     const location = useLocation();
@@ -46,6 +47,8 @@ function PasswordLoginPage() {
             setIsLoading(true);
 
             const data = await login(email, pinValue);
+
+            clearDemoSession();
 
             // 로그인 성공 후 사용자 ID 설정
             setAmplitudeUserId(data.userId);

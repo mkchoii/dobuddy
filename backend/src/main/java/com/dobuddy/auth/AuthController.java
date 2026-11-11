@@ -6,15 +6,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.util.List;
 
 @RestController
@@ -57,6 +61,17 @@ public class AuthController {
                 httpResponse
         );
 
+        // 로그인 이력 쿠키 발급
+        ResponseCookie cookie = ResponseCookie.from("hasAuthHistory", "true")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/")
+                .maxAge(Duration.ofDays(90))
+                .build();
+
+        httpResponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
         HttpSession session = httpRequest.getSession();
         session.setAttribute("isSignupSession", true);
 
@@ -90,6 +105,17 @@ public class AuthController {
                 httpResponse
         );
 
+        // 로그인 이력 쿠키 발급
+        ResponseCookie cookie = ResponseCookie.from("hasAuthHistory", "true")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/")
+                .maxAge(Duration.ofDays(90))
+                .build();
+
+        httpResponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
         return ResponseEntity.ok(response);
     }
 
@@ -99,5 +125,24 @@ public class AuthController {
         PasswordResetResponse response = authService.resetPassword(request);
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/auth/entry-status")
+    public ResponseEntity<EntryStatusResponse> getEntryStatus(Authentication authentication,
+                                                              @CookieValue(value = "hasAuthHistory", required = false) String hasAuthHistory) {
+
+        boolean isLoggedIn = authentication != null
+                && authentication.isAuthenticated()
+                && authentication.getPrincipal() instanceof Integer;
+
+        boolean hasHistory = "true".equals(hasAuthHistory);
+
+        return ResponseEntity.ok(
+                new EntryStatusResponse(
+                        isLoggedIn,
+                        hasHistory
+                )
+        );
+
     }
 }

@@ -31,6 +31,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/signup", "/login/**", "/error", "/invites/**").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/studies")
+                        .permitAll()
+
                         // 관리자 전용
                         .requestMatchers(HttpMethod.POST, "/studies")
                         .hasRole("ADMIN")

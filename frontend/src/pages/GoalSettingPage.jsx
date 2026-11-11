@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { CATEGORIES } from '../categories';
@@ -10,11 +10,12 @@ import { createGoal } from '../api/goalApi';
 
 import './GoalSettingPage.css';
 import './AuthPage.css';
-import { trackGoalCreated, trackApiRequestFailed } from '../amplitude';
+import { trackGoalCreated, trackApiRequestFailed, trackGuestStarted } from '../amplitude';
 import { handleApiError } from '../handleApiError';
 
 function GoalSettingPage() {
     const navigate = useNavigate();
+    const isDemo = sessionStorage.getItem('isDemo') === 'true';
 
     const nickname = location.state?.nickname;
 
@@ -24,6 +25,19 @@ function GoalSettingPage() {
     const selectedCategory = CATEGORIES.find(
         (item) => item.value === category
     );
+
+    useEffect(() => {
+    const isDemo = sessionStorage.getItem('isDemo') === 'true';
+
+    if (!isDemo) return;
+
+    if (sessionStorage.getItem('guestStartedTracked') === 'true') {
+        return;
+    }
+
+    sessionStorage.setItem('guestStartedTracked', 'true');
+    trackGuestStarted();
+}, []);
 
     const handleGoalNameChange = (e) => {
         const value = e.target.value;
@@ -44,6 +58,20 @@ function GoalSettingPage() {
     };
 
     const handleComplete = async () => {
+        // 체험판인 경우
+        if (isDemo) {
+            const demoGoal = {
+                category,
+                goalName: goalName.trim(),
+            };
+
+            sessionStorage.setItem('demoGoal', JSON.stringify(demoGoal));
+
+            navigate('/dashboard', { replace: true });
+            return;
+        }
+
+        // 일반 사용자
         try {
             const data = await createGoal(category, goalName);
 

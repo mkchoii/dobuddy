@@ -7,6 +7,7 @@ import Button from '../components/common/Button';
 import { signup } from '../api/authApi';
 
 import './AuthPage.css';
+import { clearDemoSession } from '../demoDashboard';
 
 function PasswordSetupPage() {
     const location = useLocation();
@@ -39,6 +40,8 @@ function PasswordSetupPage() {
     const handleSubmit = async () => {
         try {
             const data = await signup(signupData);
+
+            clearDemoSession();
 
             setAmplitudeUserId(data.userId);
 

@@ -371,3 +371,34 @@ export const trackPageScrolled = (scrollDepth) => {
         scroll_depth: scrollDepth
     });
 };
+
+export const trackGuestStarted = () => {
+    amplitude.track('Guest_Started');
+};
+
+export const trackGuestModalViewed = ({ feature }) => {
+    amplitude.track('GuestModal_Viewed', { feature });
+};
+
+export const trackGuestModalSignupClicked = ({ feature }) => {
+    amplitude.track('GuestModalSignup_Clicked', { feature });
+};
+
+export const trackGuestModalCanceled = ({ feature }) => {
+    amplitude.track('GuestModal_Canceled', { feature });
+};
+
+export const trackGuestBannerClicked = ({ button }) => {
+    amplitude.track('GuestBanner_Clicked', { button });
+};
+
+export const trackGuestStudyListViewed = () => {
+    amplitude.track('GuestStudyList_Viewed');
+};
+
+export const trackGuestAction = ({ action, page_name }) => {
+    amplitude.track('Guest_Action', {
+        action,
+        page_name
+    });
+};

@@ -8,6 +8,7 @@ function StudyCard({
   isJoined = false, 
   onJoin, 
   isAdmin = false, 
+  isDemo = false,
   onManage }) {
     const category = CATEGORIES.find(
         (item) => item.value === study.category
@@ -43,7 +44,11 @@ function StudyCard({
                     type="button"
                     className="study-join-button"
                     onClick={() => isAdmin ? onManage(study) : onJoin(study)}
-                    disabled={!isAdmin && (isJoined || !study.canJoin)}
+                    disabled={!isAdmin && (
+                        study.currentMembers >= study.maxMembers || 
+                        (!isDemo && (isJoined || !study.canJoin))
+                        )
+                    }
                 >
                     {isAdmin ? '관리' : '참여하기'}
                 </button>

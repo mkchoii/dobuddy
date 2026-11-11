@@ -9,11 +9,16 @@ import StudyDashboardPage from './StudyDashboardPage';
 import './StudyDashboardPage.css';
 
 function StudyPage() {
+    const isDemo = sessionStorage.getItem('isDemo') === 'true';
+
     const [studyId, setStudyId] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(!isDemo);
     const [errorMessage, setErrorMessage] = useState('');
+    
 
     useEffect(() => {
+        if (isDemo) return;
+
         const loadMyStudy = async () => {
             try {
                 const data = await getMyStudy();
@@ -27,7 +32,7 @@ function StudyPage() {
         };
 
         loadMyStudy();
-    }, []);
+    }, [isDemo]);
 
     if (isLoading) {
         return null;
@@ -43,7 +48,7 @@ function StudyPage() {
                 index
                 element={
                     <Navigate
-                        to={studyId === null ? 'list' : 'dashboard'}
+                        to={isDemo || studyId === null ? 'list' : 'dashboard'}
                         replace
                     />
                 }
@@ -53,7 +58,7 @@ function StudyPage() {
                 path="list"
                 element={
                     <StudyListPage
-                        isJoined={studyId !== null}
+                        isJoined={!isDemo && studyId !== null}
                         onJoined={setStudyId}
                     />
                 }
@@ -62,7 +67,7 @@ function StudyPage() {
             <Route 
                 path="dashboard"
                 element={
-                    studyId !== null
+                    !isDemo && studyId !== null
                         ? <StudyDashboardPage studyId={studyId} />
                         : <Navigate to="/study/list" replace />
                 } 

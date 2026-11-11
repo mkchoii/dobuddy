@@ -117,3 +117,21 @@ export async function resetPassword(email) {
 
     return data;
 }
+
+export async function getEntryStatus() {
+    const response = await fetch(`${API_BASE_URL}/auth/entry-status`, {
+        method: 'GET',
+        credentials: 'include',
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        const error = new Error(data.message);
+        error.code = data.code;
+
+        throw error;
+    }
+
+    return data;
+}
