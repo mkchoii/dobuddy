@@ -1,7 +1,7 @@
 import SmallButton from '../common/SmallButton';
 import { useNavigate } from 'react-router-dom';
 import { trackGuestModalCanceled, trackGuestModalSignupClicked } from '../../amplitude';
-import './Demomodal.css';
+import './DemoModal.css';
 
 function DemoModal({ 
   onClose,
