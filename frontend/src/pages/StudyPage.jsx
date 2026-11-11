@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
-import { getMyStudy } from '../api/studyApi';
+import { getMyStudy, updateChatPromoSeen } from '../api/studyApi';
 
 import StudyListPage from './StudyListPage';
 import StudyDashboardPage from './StudyDashboardPage';
 
 import './StudyDashboardPage.css';
+
+import ChatPromoModal from '../components/modal/ChatPromoModal';
+import { handleApiError } from '../handleApiError';
+import { trackOpenChatPopupViewed } from '../amplitude';
 
 function StudyPage() {
     const isDemo = sessionStorage.getItem('isDemo') === 'true';
@@ -14,6 +18,8 @@ function StudyPage() {
     const [studyId, setStudyId] = useState(null);
     const [isLoading, setIsLoading] = useState(!isDemo);
     const [errorMessage, setErrorMessage] = useState('');
+
+    const [isChatPromoOpen, setIsChatPromoOpen] = useState(false);
     
 
     useEffect(() => {
@@ -23,6 +29,17 @@ function StudyPage() {
             try {
                 const data = await getMyStudy();
                 setStudyId(data.studyId);
+
+                if (data.studyId !== null && !data.chatPromoSeen) {
+                    setIsChatPromoOpen(true);
+                    trackOpenChatPopupViewed();
+
+                    try {
+                        await updateChatPromoSeen();
+                    } catch (error) {
+                        console.error('홍보 모달 노출 기록 실패: ', error);
+                    }
+                }
             } catch (error) {
                 if (handleApiError(error)) return;
                 setErrorMessage(error.message);
@@ -34,6 +51,27 @@ function StudyPage() {
         loadMyStudy();
     }, [isDemo]);
 
+    const handleJoined = async (newStudyId) => {
+        setStudyId(newStudyId);
+
+        try {
+            const data = await getMyStudy();
+
+            if (!data.chatPromoSeen) {
+                setIsChatPromoOpen(true);
+                trackOpenChatPopupViewed();
+
+                try {
+                    await updateChatPromoSeen();
+                } catch (error) {
+                    console.error('홍보 모달 노출 기록 실패:', error);
+                }
+            }
+        } catch (error) {
+            console.error('홍보 모달 확인 실패:', error);
+        }
+};
+
     if (isLoading) {
         return null;
     }
@@ -43,6 +81,7 @@ function StudyPage() {
     }
 
     return (
+        <>
         <Routes>
             <Route
                 index
@@ -59,7 +98,7 @@ function StudyPage() {
                 element={
                     <StudyListPage
                         isJoined={!isDemo && studyId !== null}
-                        onJoined={setStudyId}
+                        onJoined={handleJoined}
                     />
                 }
             />
@@ -78,6 +117,12 @@ function StudyPage() {
                 element={<Navigate to="/study" replace />}
             />
         </Routes>
+        {isChatPromoOpen && (
+            <ChatPromoModal 
+                onClose={() => setIsChatPromoOpen(false)}
+            />
+        )}
+        </>
     );
 }
 

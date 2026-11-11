@@ -402,3 +402,7 @@ export const trackGuestAction = ({ action, page_name }) => {
         page_name
     });
 };
+
+export const trackOpenChatPopupViewed = () => {
+    amplitude.track('OpenChatPopup_Viewed');
+};

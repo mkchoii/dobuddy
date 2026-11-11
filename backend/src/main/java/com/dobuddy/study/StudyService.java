@@ -524,11 +524,17 @@ public class StudyService {
 
     public MyStudyResponse getMyStudy(Integer userId) {
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(
+                        HttpStatus.NOT_FOUND,
+                        "사용자를 찾을 수 없습니다."
+                ));
+
         Integer studyId = studyMemberRepository.findByUserId(userId)
                 .map(studyMember -> studyMember.getStudy().getId())
                 .orElse(null);
 
-        return new MyStudyResponse(studyId);
+        return new MyStudyResponse(studyId, user.isChatPromoSeen());
     }
 
     @Transactional
@@ -610,5 +616,17 @@ public class StudyService {
         boolean canJoin = currentMembers < study.getMaxMembers();
 
         return new StudyAvailabilityResponse(canJoin);
+    }
+
+    @Transactional
+    public void updateChatPromoSeen(Integer userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(
+                        HttpStatus.NOT_FOUND,
+                        "사용자를 찾을 수 없습니다."
+                ));
+
+        user.setChatPromoSeen(true);
     }
 }

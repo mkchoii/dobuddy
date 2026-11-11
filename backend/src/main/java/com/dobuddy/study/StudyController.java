@@ -141,4 +141,14 @@ public class StudyController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PatchMapping("/me/chat-promo")
+    public ResponseEntity<Void> updateChatPromoSeen(Authentication authentication) {
+
+        Integer userId = (Integer) authentication.getPrincipal();
+
+        studyService.updateChatPromoSeen(userId);
+
+        return ResponseEntity.noContent().build();
+    }
 }

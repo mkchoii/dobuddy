@@ -59,6 +59,9 @@ public class User {
     @Column
     private Channel channel;
 
+    @Column(nullable = false)
+    private boolean chatPromoSeen = false;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
@@ -89,4 +92,5 @@ public class User {
     public void setFirstTaskCreatedAt(LocalDateTime firstTaskCreatedAt) { this.firstTaskCreatedAt = firstTaskCreatedAt; }
     public void setFirstTaskCompletedAt(LocalDateTime firstTaskCompletedAt) { this.firstTaskCompletedAt = firstTaskCompletedAt; }
     public void setFirstStudyJoinedAt(LocalDateTime firstStudyJoinedAt) { this.firstStudyJoinedAt = firstStudyJoinedAt; }
+    public void setChatPromoSeen(boolean chatPromoSeen) { this.chatPromoSeen = chatPromoSeen; }
 }
