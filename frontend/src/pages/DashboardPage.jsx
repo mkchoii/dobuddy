@@ -22,8 +22,32 @@ import {
 } from '../api/dashboardApi';
 
 import './DashboardPage.css';
-import { trackApiRequestFailed, trackGoalCreated, trackGoalDeleted, trackGoalSummaryCardViewed, trackGoalUpdated, trackTaskCompleted, trackTaskCompletedCanceled, trackTaskCreated, trackTaskDeleted, trackTaskUpdated } from '../amplitude';
+import { 
+    trackApiRequestFailed, 
+    trackGoalCreated, 
+    trackGoalDeleted, 
+    trackGoalSummaryCardViewed, 
+    trackGoalUpdated, 
+    trackTaskCompleted, 
+    trackTaskCompletedCanceled, 
+    trackTaskCreated, 
+    trackTaskDeleted, 
+    trackTaskUpdated ,
+    trackGuestAction
+} from '../amplitude';
 import { handleApiError } from '../handleApiError';
+
+import {
+    getDemoDashboard,
+    updateDemoFinalGoal,
+    createDemoGoal,
+    updateDemoGoal,
+    deleteDemoGoal,
+    createDemoTask,
+    updateDemoTaskCompletion,
+    updateDemoTask,
+    deleteDemoTask
+} from '../demoDashboard';
 
 function DashboardPage() {
     const [dashboard, setDashboard] = useState(null);
@@ -34,8 +58,19 @@ function DashboardPage() {
     const [selectedGoalId, setSelectedGoalId] = useState(null);
     const [error, setError] = useState(null);
 
+    const isDemo = sessionStorage.getItem('isDemo') === 'true';
+    const refreshDemoDashboard = (date = dashboard?.selectedDate) => {
+        setDashboard(getDemoDashboard(date));
+    };
+
     // 대시보드 조회 및 날짜 선택
     const loadDashboard = async (date) => {
+        // 데모 모드
+        if (isDemo) {
+            setDashboard(getDemoDashboard(date));
+            return;
+        }
+
         try {
             const data = await getDashboard(date);
             setDashboard(data);
@@ -58,7 +93,14 @@ function DashboardPage() {
     // 상단 카드 더보기
     const handleClickMore = () => {
         if (topCardMode === 'finalGoal') {
+            if (isDemo) {
+            trackGuestAction({
+                action: 'goalsummarycard_viewed',
+                page_name: 'DashboardPage'
+            });
+        } else {
             trackGoalSummaryCardViewed();
+        }
             
             const goals = dashboard.goalProgress;
 
@@ -101,6 +143,16 @@ function DashboardPage() {
             return;
         }
 
+        // 데모 모드
+        if (isDemo) {
+            updateDemoFinalGoal(trimmedValue);
+            refreshDemoDashboard();
+
+            setFinalGoalInput('');
+            setIsFinalGoalEditModalOpen(false);
+            return;
+        }
+
         try {
             const updated = await updateFinalGoal(trimmedValue);
 
@@ -119,6 +171,19 @@ function DashboardPage() {
 
     // 태스크 완료
     const handleCheckTask = async (taskId, isCompleted) => {
+        // 데모 모드
+        if (isDemo) {
+            updateDemoTaskCompletion(taskId, !isCompleted);
+            refreshDemoDashboard();
+
+            trackGuestAction({
+                action: !isCompleted ? 'task_completed' : 'taskcompletion_canceled',
+                page_name: 'DashboardPage'
+            });
+
+            return;
+        }
+
         try {
             const data = await updateTaskCompletion(
                 taskId,
@@ -172,6 +237,19 @@ function DashboardPage() {
             return true; 
         }
 
+        // 데모 모드
+        if (isDemo) {
+            updateDemoTask(taskId, content);
+            refreshDemoDashboard();
+
+            trackGuestAction({
+                action: 'task_updated',
+                page_name: 'DashboardPage'
+            });
+
+            return true;
+        }
+
         try {
             const data = await updateTask(taskId, content);
 
@@ -202,6 +280,19 @@ function DashboardPage() {
 
     // 태스크 삭제
     const handleDeleteTask = async (taskId) => {
+        // 데모 모드
+        if (isDemo) {
+            deleteDemoTask(taskId);
+            refreshDemoDashboard();
+
+            trackGuestAction({
+                action: 'task_deleted',
+                page_name: 'DashboardPage'
+            });
+
+            return true;
+        }
+
         try {
             const data = await deleteTask(taskId);
 
@@ -237,6 +328,19 @@ function DashboardPage() {
         taskDate,
         content
     ) => {
+        // 데모 모드
+        if (isDemo) {
+            createDemoTask(goalId, taskDate, content);
+            refreshDemoDashboard();
+
+            trackGuestAction({
+                action: 'task_created',
+                page_name: 'DashboardPage'
+            });
+
+            return true;
+        }
+
         try {
             const data = await createTask(
                 goalId,
@@ -277,6 +381,19 @@ function DashboardPage() {
 
     // 세부 목표 생성
     const handleCreateGoal = async (category, goalName) => {
+        // 데모 모드
+        if (isDemo) {
+            createDemoGoal(category, goalName);
+            refreshDemoDashboard();
+
+            trackGuestAction({
+                action: 'tgoal_created',
+                page_name: 'DashboardPage'
+            });
+
+            return true;
+        }
+
         try {
             const createdGoal = await createGoal(category,goalName);
 
@@ -328,6 +445,19 @@ function DashboardPage() {
         category,
         goalName
     ) => {
+        // 데모 모드
+        if (isDemo) {
+            updateDemoGoal(goalId, category, goalName);
+            refreshDemoDashboard();
+
+            trackGuestAction({
+                action: 'goal_updated',
+                page_name: 'DashboardPage'
+            });
+
+            return true;
+        }
+
         try {
             const updatedGoal = await updateGoal(
                 goalId, {
@@ -377,6 +507,19 @@ function DashboardPage() {
 
     // 세부 목표 삭제
     const handleDeleteGoal = async (goalId) => {
+        // 데모 모드
+        if (isDemo) {
+            deleteDemoGoal(goalId);
+            refreshDemoDashboard();
+
+            trackGuestAction({
+                action: 'goal_deleted',
+                page_name: 'DashboardPage'
+            });
+
+            return true;
+        }
+        
         try {
             const data = await deleteGoal(goalId);
 

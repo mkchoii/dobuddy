@@ -11,6 +11,7 @@ import com.dobuddy.user.User;
 import com.dobuddy.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,18 @@ public class StudyService {
     private final UserRepository userRepository;
     private final StudyMemberGoalRepository studyMemberGoalRepository;
     private final TaskRepository taskRepository;
+
+    @Value("${open-chat.urls.LANGUAGE}")
+    private String languageOpenChatUrl;
+
+    @Value("${open-chat.urls.CERTIFICATE}")
+    private String certificateOpenChatUrl;
+
+    @Value("${open-chat.urls.INTERVIEW}")
+    private String interviewOpenChatUrl;
+
+    @Value("${open-chat.urls.PORTFOLIO}")
+    private String portfolioOpenChatUrl;
 
     public StudyResponse createStudy(StudyCreateRequest request) {
 
@@ -164,8 +177,10 @@ public class StudyService {
         List<StudyListItemResponse> studyResponses = studies.stream()
                 .map(study -> {
                     long currentMembers = studyMemberRepository.countByStudyId(study.getId());
-                    boolean hasMatchingGoal = goalRepository.existsByUserIdAndCategory(userId, study.getCategory());
-                    boolean alreadyJoined = studyMemberRepository.existsByStudyIdAndUserId(study.getId(), userId);
+                    boolean hasMatchingGoal = userId != null
+                            && goalRepository.existsByUserIdAndCategory(userId, study.getCategory());
+                    boolean alreadyJoined = userId != null
+                            && studyMemberRepository.existsByStudyIdAndUserId(study.getId(), userId);
 
                     // 가입 가능 조건 : 현재 가입인원 정원 미만, 같은 카테고리의 세부목표 보유, 이미 가입하지 않음
                     boolean canJoin = currentMembers < study.getMaxMembers() && hasMatchingGoal && !alreadyJoined;
@@ -393,8 +408,19 @@ public class StudyService {
                 study.getCategory(),
                 studyMembers.size(),
                 study.getMaxMembers(),
+                getOpenChatUrl(study.getCategory()),
                 memberResponses
         );
+    }
+
+    private String getOpenChatUrl(Category category) {
+        return switch (category) {
+            case LANGUAGE -> languageOpenChatUrl;
+            case CERTIFICATE -> certificateOpenChatUrl;
+            case INTERVIEW -> interviewOpenChatUrl;
+            case PORTFOLIO -> portfolioOpenChatUrl;
+            default -> null;
+        };
     }
 
     public StudyMemberDetailResponse getStudyMemberDetail(Integer studyId, Integer studyMemberId, Integer userId, boolean isAdmin) {
@@ -498,11 +524,17 @@ public class StudyService {
 
     public MyStudyResponse getMyStudy(Integer userId) {
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(
+                        HttpStatus.NOT_FOUND,
+                        "사용자를 찾을 수 없습니다."
+                ));
+
         Integer studyId = studyMemberRepository.findByUserId(userId)
                 .map(studyMember -> studyMember.getStudy().getId())
                 .orElse(null);
 
-        return new MyStudyResponse(studyId);
+        return new MyStudyResponse(studyId, user.isChatPromoSeen());
     }
 
     @Transactional
@@ -584,5 +616,17 @@ public class StudyService {
         boolean canJoin = currentMembers < study.getMaxMembers();
 
         return new StudyAvailabilityResponse(canJoin);
+    }
+
+    @Transactional
+    public void updateChatPromoSeen(Integer userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(
+                        HttpStatus.NOT_FOUND,
+                        "사용자를 찾을 수 없습니다."
+                ));
+
+        user.setChatPromoSeen(true);
     }
 }

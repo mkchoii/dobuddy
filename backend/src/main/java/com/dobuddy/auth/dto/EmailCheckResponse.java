@@ -7,5 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class EmailCheckResponse {
 
-    private String next;
+    private boolean exists;
 }

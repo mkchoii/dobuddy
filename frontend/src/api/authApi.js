@@ -22,7 +22,7 @@ export async function checkEmail(email) {
     return data;
 }
 
-export async function signup(email, password) {
+export async function signup({email, password, channel}) {
     const response = await fetch(`${API_BASE_URL}/signup`, {
         method: 'POST',
         headers: {
@@ -31,7 +31,8 @@ export async function signup(email, password) {
         credentials: 'include',
         body: JSON.stringify({
             email,
-            password
+            password,
+            channel
         }),
     });
 
@@ -110,6 +111,24 @@ export async function resetPassword(email) {
         const error = new Error(data.message);
         error.code = data.code;
         error.attemptCount = data.attemptCount;
+
+        throw error;
+    }
+
+    return data;
+}
+
+export async function getEntryStatus() {
+    const response = await fetch(`${API_BASE_URL}/auth/entry-status`, {
+        method: 'GET',
+        credentials: 'include',
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        const error = new Error(data.message);
+        error.code = data.code;
 
         throw error;
     }

@@ -15,5 +15,6 @@ public class StudyDashboardResponse {
     private Category category;
     private long currentMembers;
     private Integer maxMembers;
+    private String openChatUrl;
     private List<StudyMemberResponse> members;
 }

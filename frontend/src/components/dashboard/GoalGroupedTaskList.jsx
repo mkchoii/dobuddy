@@ -25,7 +25,7 @@ function GoalGroupedTaskList({
             return a.isCompleted ? 1 : -1;
         }
 
-        return a.createdAt.localeCompare(b.createdAt);
+        return (a.createdAt ?? '').localeCompare(b.createdAt ?? '');
     });
 
     const [openTaskId, setOpenTaskId] = useState(null);

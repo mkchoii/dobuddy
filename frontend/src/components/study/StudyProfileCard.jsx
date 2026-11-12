@@ -1,6 +1,7 @@
 import CategoryChip from '../CategoryChip';
 import { CATEGORIES } from '../../categories';
 import peopleIcon from '../../assets/icons/people.svg';
+import { trackEvent } from '../../amplitude';
 
 function StudyProfileCard({ study }) {
     const category = CATEGORIES.find(
@@ -12,6 +13,18 @@ function StudyProfileCard({ study }) {
             <h2 className="study-profile-name">
                 {study.studyName}
             </h2>
+
+            {study.openChatUrl && (
+                <a
+                    href={study.openChatUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="study-room-enter-button"
+                    onClick={() => trackEvent('KakaoChat_Clicked')}
+                >
+                    스터디방 입장하기
+                </a>
+            )}
 
             <div className="study-profile-bottom">
                 {category && (

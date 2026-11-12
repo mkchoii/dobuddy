@@ -7,6 +7,7 @@ import Button from '../components/common/Button';
 import { signup } from '../api/authApi';
 
 import './AuthPage.css';
+import { clearDemoSession } from '../demoDashboard';
 
 function PasswordSetupPage() {
     const location = useLocation();
@@ -17,6 +18,14 @@ function PasswordSetupPage() {
     const [errorMessage, setErrorMessage] = useState('');
 
     const isValidPin = /^\d{4}$/.test(pinValue);
+
+    const utmSource = sessionStorage.getItem('utm_source');
+    
+    const signupData = {
+        email,
+        password: pinValue,
+        channel: utmSource ? utmSource.toUpperCase() : null
+    };
 
     const handlePinChange = (value) => {
         setPinValue(value);
@@ -30,7 +39,9 @@ function PasswordSetupPage() {
 
     const handleSubmit = async () => {
         try {
-            const data = await signup(email, pinValue);
+            const data = await signup(signupData);
+
+            clearDemoSession();
 
             setAmplitudeUserId(data.userId);
 

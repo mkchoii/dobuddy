@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getStudies, joinStudy, getStudyAvailability } from '../api/studyApi';
 
@@ -11,11 +11,25 @@ import { handleApiError } from '../handleApiError';
 
 import './StudyListPage.css';
 import StudyAvailabilityWarningModal from '../components/modal/StudyAvailabilityWarningModal';
-import { trackApiRequestFailed, trackStudyJoinFailed, trackStudyJoinModalCanceled, trackStudyJoinSucceeded } from '../amplitude';
+import { 
+    trackApiRequestFailed, 
+    trackGuestModalViewed, 
+    trackStudyJoinFailed, 
+    trackStudyJoinModalCanceled, 
+    trackStudyJoinSucceeded, 
+    trackGuestStudyListViewed 
+} from '../amplitude';
+
+import DemoModal from '../components/modal/DemoModal';
 
 
 function StudyListPage({ isJoined, onJoined }) {
     const navigate = useNavigate();
+
+    const isDemo = sessionStorage.getItem('isDemo') === 'true';
+    const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+    const hasTrackedStudyList = useRef(false);
+
     const [selectedCategory, setSelectedCategory] = useState('ALL');
     const [studies, setStudies] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -26,6 +40,12 @@ function StudyListPage({ isJoined, onJoined }) {
     const [isAvailabilityWarningOpen, setIsAvailabilityWarningOpen] = useState(false);
     const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
     const [reloadStudyList, setReloadStudyList] = useState(0);
+
+    useEffect(() => {
+        if (!isDemo || hasTrackedStudyList.current) return;
+        hasTrackedStudyList.current = true;
+        trackGuestStudyListViewed();
+    }, [isDemo]);
 
     useEffect(() => {
         const loadStudies = async () => {
@@ -106,6 +126,14 @@ function StudyListPage({ isJoined, onJoined }) {
     };
 
     const handleJoinClick = async (study) => {
+        if (isDemo) {
+            if (isDemoModalOpen) return;
+
+            setIsDemoModalOpen(true);
+            trackGuestModalViewed({ feature: 'study_join'});
+            return;
+        }
+
         if (isCheckingAvailability) return;
 
         try {
@@ -164,12 +192,20 @@ function StudyListPage({ isJoined, onJoined }) {
                                     key={study.studyId}
                                     study={study}
                                     isJoined={isJoined}
+                                    isDemo={isDemo}
                                     onJoin={handleJoinClick}
                                     />
                                 ))}
                             </div>
                         )}
                     </main>
+                    {isDemoModalOpen && (
+                        <DemoModal 
+                            feature="study_join"
+                            onClose={() => setIsDemoModalOpen(false)}
+                        />
+                    )}
+
                     {selectedStudy && !isAvailabilityWarningOpen && (
                         <StudyGoalLinkModal
                             study={selectedStudy}

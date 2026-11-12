@@ -2,8 +2,16 @@ import { NavLink } from 'react-router-dom';
 
 import './NavigationBar.css';
 
+import DemoModal from '../modal/DemoModal';
+import { useState } from 'react';
+import { trackGuestModalViewed } from '../../amplitude';
+
 function NavigationBar() {
+    const isDemo = sessionStorage.getItem('isDemo') === 'true';
+    const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+
     return (
+        <>
         <nav className="navigation-bar">
 
             <NavLink
@@ -35,11 +43,28 @@ function NavigationBar() {
                 className={({ isActive }) =>
                     `navigation-item ${isActive || window.location.pathname === '/password-change' ? 'active' : ''}`
                 }
+                onClick={(event) => {
+                    if (isDemo) {
+                        event.preventDefault();
+
+                        if (isDemoModalOpen) return;
+                        setIsDemoModalOpen(true);
+                        trackGuestModalViewed({ feature: 'my_page' });
+                    }
+                }}
             >
                 마이페이지
             </NavLink>
 
         </nav>
+
+        {isDemoModalOpen && (
+            <DemoModal 
+                feature="my_page"
+                onClose={() => setIsDemoModalOpen(false)}
+            />
+        )}
+        </>
     );
 }
 

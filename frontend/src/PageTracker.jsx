@@ -10,9 +10,26 @@ function PageTracker() {
     const location = useLocation();
     const previousPageRef = useRef(null);
 
+    const isDemo = sessionStorage.getItem('isDemo') === 'true';
+
+    const isDemoPage = [
+        '/goal-setting',
+        '/dashboard',
+        '/study',
+    ].some(path =>
+        location.pathname === path ||
+        location.pathname.startsWith(`${path}/`)
+    );
+
+    const shouldSkipTracking =
+        location.pathname === '/' ||
+        location.pathname === '/entry' ||
+        location.pathname === '/study' ||
+        (isDemo && isDemoPage);
+
     // Page_Viewed
     useEffect(() => {
-        if (location.pathname === '/study') return;
+        if (shouldSkipTracking) return;
 
         trackPageViewed(previousPageRef.current);
         previousPageRef.current = getPageName();
@@ -20,7 +37,7 @@ function PageTracker() {
 
     // Page_Scrolled
     useEffect(() => {
-        if (location.pathname === '/study') return;
+        if (shouldSkipTracking) return;
 
         const reachedDepths = new Set();
         const thresholds = [50, 100];
@@ -47,7 +64,7 @@ function PageTracker() {
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    }, [location.pathname]);
+    }, [location.pathname, shouldSkipTracking]);
 
     return null;
 }

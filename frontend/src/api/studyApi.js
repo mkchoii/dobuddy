@@ -274,3 +274,19 @@ export async function getStudyAvailability(studyId) {
 
     return response.json();
 }
+
+export async function updateChatPromoSeen() {
+    const response = await apiFetch(`${API_BASE_URL}/studies/me/chat-promo`,
+        {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error('스터디 홍보 팝업 노출 여부 수정에 실패했습니다.');
+    }
+}

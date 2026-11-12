@@ -53,7 +53,13 @@ public class StudyController {
     @GetMapping
     public ResponseEntity<StudyListResponse> getStudies(@RequestParam(required = false) Category category, Authentication authentication) {
 
-        Integer userId = (Integer) authentication.getPrincipal();
+        Integer userId = null;
+
+        if (authentication != null
+                && authentication.isAuthenticated()
+                && authentication.getPrincipal() instanceof Integer id) {
+            userId = id;
+        }
 
         StudyListResponse response = studyService.getStudies(userId, category);
 
@@ -134,5 +140,15 @@ public class StudyController {
         StudyAvailabilityResponse response = studyService.getStudyAvailability(studyId);
 
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/me/chat-promo")
+    public ResponseEntity<Void> updateChatPromoSeen(Authentication authentication) {
+
+        Integer userId = (Integer) authentication.getPrincipal();
+
+        studyService.updateChatPromoSeen(userId);
+
+        return ResponseEntity.noContent().build();
     }
 }

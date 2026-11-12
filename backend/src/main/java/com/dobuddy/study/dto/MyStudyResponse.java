@@ -1,5 +1,6 @@
 package com.dobuddy.study.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,4 +9,5 @@ import lombok.Getter;
 public class MyStudyResponse {
 
     private Integer studyId;
+    private boolean chatPromoSeen;
 }
