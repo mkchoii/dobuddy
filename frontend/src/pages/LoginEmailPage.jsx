@@ -16,17 +16,6 @@ function LoginEmailPage() {
     const navigate = useNavigate();
     const emailAttemptCount = useRef(0);
 
-    // sessionStorage는 페이지를 이동하거나 새로고침해도 같은 탭에서는 값이 유지됨
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const utmSource = params.get('utm_source');
-
-        if (utmSource) {
-            sessionStorage.setItem('utm_source', utmSource);
-        }
-
-    }, []);
-
     const handleEmailChange = (event) => {
         const value = event.target.value;
 

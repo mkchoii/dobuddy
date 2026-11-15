@@ -406,3 +406,12 @@ export const trackGuestAction = ({ action, page_name }) => {
 export const trackOpenChatPopupViewed = () => {
     amplitude.track('OpenChatPopup_Viewed');
 };
+
+export const saveUtmSource = () => {
+    const params = new URLSearchParams(window.location.search);
+    const utmSource = params.get('utm_source');
+
+    if (utmSource) {
+        sessionStorage.setItem('utm_source', utmSource);
+    }
+};
