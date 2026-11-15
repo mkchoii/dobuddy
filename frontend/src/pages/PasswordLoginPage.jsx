@@ -1,6 +1,12 @@
 import { useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { setAmplitudeUserId, trackEvent } from '../amplitude';
+import {
+    setAmplitudeUserId,
+    trackLoginSucceeded,
+    trackLoginFailed,
+    trackPasswordResetSucceeded,
+    trackPasswordResetFailed
+} from '../amplitude';
 
 import PasswordInput from '../components/common/PasswordInput';
 import PasswordResetModal from '../components/modal/PasswordResetModal';
@@ -52,9 +58,7 @@ function PasswordLoginPage() {
 
             // 로그인 성공 후 사용자 ID 설정
             setAmplitudeUserId(data.userId);
-            trackEvent('Login_Succeeded', {
-                login_attempt_count: loginAttemptCount.current
-            });
+            trackLoginSucceeded(loginAttemptCount.current);
 
             if (data.role === 'ADMIN') {
                 navigate('/admin', { replace: true });
@@ -66,10 +70,7 @@ function PasswordLoginPage() {
         } catch (error) {
             const failReason = error.code === 'PASSWORD_MISMATCH' ? 'password_mismatch' : 'server_error';
 
-            trackEvent('Login_Failed', {
-                login_attempt_count: loginAttemptCount.current,
-                fail_reason: failReason
-            });
+            trackLoginFailed(loginAttemptCount.current, failReason);
 
             setErrorState('invalid');
         } finally {
@@ -91,9 +92,7 @@ function PasswordLoginPage() {
 
             const data = await resetPassword(email);
 
-            trackEvent('PasswordReset_Succeeded', {
-                reset_attempt_count: data.attemptCount
-            });
+            trackPasswordResetSucceeded(data.attemptCount);
 
             setIsPasswordResetModalOpen(false);
             setIsPasswordResetCompleteModalOpen(true);
@@ -107,10 +106,7 @@ function PasswordLoginPage() {
             const failReason = failReasonMap[error.code];
 
             if (failReason) {
-                trackEvent('PasswordReset_Failed', {
-                    reset_attempt_count: error.attemptCount,
-                    fail_reason: failReason
-                });
+                trackPasswordResetFailed(error.attemptCount, failReason);
             }
 
             if (error.code === 'DAILY_LIMIT') {

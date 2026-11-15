@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { trackEvent } from '../amplitude';
+import { trackSignupPageViewed, trackEmailCreated } from '../amplitude';
 
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
@@ -21,7 +21,7 @@ function SignupPage() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   useEffect(() => {
-      trackEvent('SignupPage_Viewed');
+      trackSignupPageViewed();
   }, []);
 
   const handleEmailChange = (event) => {
@@ -74,7 +74,7 @@ function SignupPage() {
         return;
       }
 
-      trackEvent('Email_Created');
+      trackEmailCreated();
 
       // 미가입 이메일
       navigate('/signup/password', {

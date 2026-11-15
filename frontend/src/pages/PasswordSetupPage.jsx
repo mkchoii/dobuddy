@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { setAmplitudeUserId, trackEvent, setUserProperties, setUserPropertiesOnce, trackApiRequestFailed } from '../amplitude';
+import { setAmplitudeUserId, trackAccountCreated, setUserProperties, setUserPropertiesOnce, trackApiRequestFailed } from '../amplitude';
 
 import PasswordInput from '../components/common/PasswordInput';
 import Button from '../components/common/Button';
@@ -53,9 +53,7 @@ function PasswordSetupPage() {
                 is_study_joined: false
             });
 
-            trackEvent('Account_Created', {
-                signup_at: data.signupAt
-            });
+            trackAccountCreated(data.signupAt);
 
             navigate('/goal-setting', { replace: true });
         } catch (error) {

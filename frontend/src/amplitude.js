@@ -125,6 +125,63 @@ export const getEntrySource = () => {
     return sessionStorage.getItem('entry_source') || 'direct';
 };
 
+export const trackEmailSucceeded = (emailAttemptCount) => {
+    trackEvent('Email_Succeeded', {
+        email_attempt_count: emailAttemptCount
+    });
+};
+
+export const trackEmailFailed = (emailAttemptCount, failReason) => {
+    trackEvent('Email_Failed', {
+        email_attempt_count: emailAttemptCount,
+        fail_reason: failReason
+    });
+};
+
+export const trackEmailCreated = () => {
+    trackEvent('Email_Created');
+};
+
+export const trackAccountCreated = (signupAt) => {
+    trackEvent('Account_Created', {
+        signupAt: signupAt
+    });
+}
+
+// Login_Succeeded
+export const trackLoginSucceeded = (loginAttemptCount) => {
+    trackEvent('Login_Succeeded', {
+        login_attempt_count: loginAttemptCount
+    });
+};
+
+// Login_Failed
+export const trackLoginFailed = (loginAttemptCount, failReason) => {
+    trackEvent('Login_Failed', {
+        login_attempt_count: loginAttemptCount,
+        fail_reason: failReason
+    });
+};
+
+// PasswordReset_Succeeded
+export const trackPasswordResetSucceeded = (resetAttemptCount) => {
+    trackEvent('PasswordReset_Succeeded', {
+        reset_attempt_count: resetAttemptCount
+    });
+};
+
+// PasswordReset_Failed
+export const trackPasswordResetFailed = (resetAttemptCount, failReason) => {
+    trackEvent('PasswordReset_Failed', {
+        reset_attempt_count: resetAttemptCount,
+        fail_reason: failReason
+    });
+};
+
+export const trackAccountDeleted = () => {
+    trackEvent('Account_Deleted');
+};
+
 // Goal_Created 이벤트
 export const trackGoalCreated = (data, goalCategories) => {
   setUserProperties({
@@ -348,7 +405,7 @@ export const trackStudyMemberModalViewed = (data) => {
 };
 
 export const trackLogoutSucceeded = async () => {
-    await amplitude.track('Logout_Succeeded').promise;
+    await trackEvent('Logout_Succeeded').promise;
     amplitude.reset();
 };
 
@@ -372,39 +429,47 @@ export const trackPageScrolled = (scrollDepth) => {
     });
 };
 
+export const trackSignupPageViewed = () => {
+    trackEvent('SignupPage_Viewed');
+};
+
 export const trackGuestStarted = () => {
-    amplitude.track('Guest_Started');
+    trackEvent('Guest_Started');
 };
 
 export const trackGuestModalViewed = ({ feature }) => {
-    amplitude.track('GuestModal_Viewed', { feature });
+    trackEvent('GuestModal_Viewed', { feature });
 };
 
 export const trackGuestModalSignupClicked = ({ feature }) => {
-    amplitude.track('GuestModalSignup_Clicked', { feature });
+    trackEvent('GuestModalSignup_Clicked', { feature });
 };
 
 export const trackGuestModalCanceled = ({ feature }) => {
-    amplitude.track('GuestModal_Canceled', { feature });
+    trackEvent('GuestModal_Canceled', { feature });
 };
 
 export const trackGuestBannerClicked = ({ button }) => {
-    amplitude.track('GuestBanner_Clicked', { button });
+    trackEvent('GuestBanner_Clicked', { button });
 };
 
 export const trackGuestStudyListViewed = () => {
-    amplitude.track('GuestStudyList_Viewed');
+    trackEvent('GuestStudyList_Viewed');
 };
 
 export const trackGuestAction = ({ action, page_name }) => {
-    amplitude.track('Guest_Action', {
+    trackEvent('Guest_Action', {
         action,
         page_name
     });
 };
 
 export const trackOpenChatPopupViewed = () => {
-    amplitude.track('OpenChatPopup_Viewed');
+    trackEvent('OpenChatPopup_Viewed');
+};
+
+export const trackKakaoChatClicked = () => {
+    trackEvent('KakaoChat_Clicked');
 };
 
 export const saveUtmSource = () => {

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { trackEvent } from '../amplitude';
+import { trackEmailFailed, trackEmailSucceeded } from '../amplitude';
 
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
@@ -42,10 +42,7 @@ function LoginEmailPage() {
         if (!emailRegex.test(email)) {
             setErrorState('invalid_format');
 
-            trackEvent('Email_Failed', {
-                email_attempt_count: emailAttemptCount.current,
-                fail_reason: 'email_format_invalid'
-            });
+            trackEmailFailed(emailAttemptCount.current, 'email_format_invalid');
 
             return;
         }
@@ -56,9 +53,7 @@ function LoginEmailPage() {
             const data = await checkEmail(email);
 
             if (data.exists) {
-                trackEvent('Email_Succeeded', {
-                    email_attempt_count: emailAttemptCount.current
-                });
+                trackEmailSucceeded(emailAttemptCount.current);
 
                 navigate('/login/password', 
                     { 
@@ -69,10 +64,7 @@ function LoginEmailPage() {
             } else {
                 setErrorState('not_registered');
 
-                trackEvent('Email_Failed', {
-                    email_attempt_count: emailAttemptCount.current,
-                    fail_reason: 'email_not_registered'
-                });
+                trackEmailFailed(emailAttemptCount.current, 'email_not_registered');
             }
         } catch (error) {
             console.error(error);
