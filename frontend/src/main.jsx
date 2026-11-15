@@ -4,11 +4,20 @@ import './index.css'
 import App from './App.jsx'
 import { initAmplitude, initEntrySource } from './amplitude.js'
 
-initAmplitude();
-initEntrySource();
+const startApp = async () => {
+  initEntrySource();
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+  try {
+    await initAmplitude();
+  } catch (error) {
+    console.error('Amplitude 초기화 실패: ', error);
+  }
+
+  createRoot(document.getElementById('root')).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  );
+};
+
+startApp();
