@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { trackEvent } from '../amplitude';
+import { trackEmailFailed, trackEmailSucceeded } from '../amplitude';
 
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
@@ -15,17 +15,6 @@ function LoginEmailPage() {
 
     const navigate = useNavigate();
     const emailAttemptCount = useRef(0);
-
-    // sessionStorage는 페이지를 이동하거나 새로고침해도 같은 탭에서는 값이 유지됨
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const utmSource = params.get('utm_source');
-
-        if (utmSource) {
-            sessionStorage.setItem('utm_source', utmSource);
-        }
-
-    }, []);
 
     const handleEmailChange = (event) => {
         const value = event.target.value;
@@ -53,10 +42,7 @@ function LoginEmailPage() {
         if (!emailRegex.test(email)) {
             setErrorState('invalid_format');
 
-            trackEvent('Email_Failed', {
-                email_attempt_count: emailAttemptCount.current,
-                fail_reason: 'email_format_invalid'
-            });
+            trackEmailFailed(emailAttemptCount.current, 'email_format_invalid');
 
             return;
         }
@@ -67,9 +53,7 @@ function LoginEmailPage() {
             const data = await checkEmail(email);
 
             if (data.exists) {
-                trackEvent('Email_Succeeded', {
-                    email_attempt_count: emailAttemptCount.current
-                });
+                trackEmailSucceeded(emailAttemptCount.current);
 
                 navigate('/login/password', 
                     { 
@@ -80,10 +64,7 @@ function LoginEmailPage() {
             } else {
                 setErrorState('not_registered');
 
-                trackEvent('Email_Failed', {
-                    email_attempt_count: emailAttemptCount.current,
-                    fail_reason: 'email_not_registered'
-                });
+                trackEmailFailed(emailAttemptCount.current, 'email_not_registered');
             }
         } catch (error) {
             console.error(error);

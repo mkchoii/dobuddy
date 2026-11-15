@@ -1,7 +1,7 @@
 import CategoryChip from '../CategoryChip';
 import { CATEGORIES } from '../../categories';
 import peopleIcon from '../../assets/icons/people.svg';
-import { trackEvent } from '../../amplitude';
+import { trackKakaoChatClicked } from '../../amplitude';
 
 function StudyProfileCard({ study }) {
     const category = CATEGORIES.find(
@@ -20,7 +20,7 @@ function StudyProfileCard({ study }) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="study-room-enter-button"
-                    onClick={() => trackEvent('KakaoChat_Clicked')}
+                    onClick={trackKakaoChatClicked}
                 >
                     스터디방 입장하기
                 </a>

@@ -2,10 +2,11 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
-import { initAmplitude, initEntrySource } from './amplitude.js'
+import { initAmplitude, initEntrySource, saveUtmSource } from './amplitude.js'
 
 const startApp = async () => {
   initEntrySource();
+  saveUtmSource();
 
   try {
     await initAmplitude();

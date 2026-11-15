@@ -52,7 +52,7 @@ const GOAL_CATEGORY_MAP = {
 
 // SDK 초기화
 export const initAmplitude = async () => {
-    amplitude.init(import.meta.env.VITE_AMPLITUDE_API_KEY, {
+    await amplitude.init(import.meta.env.VITE_AMPLITUDE_API_KEY, {
         sessionTimeout: 10*60*1000,
         autocapture: {
           attribution: true,
@@ -67,7 +67,7 @@ export const initAmplitude = async () => {
 
 // 이벤트 전송
 export const trackEvent = (eventName, properties = {}) => {
-    amplitude.track(eventName, {
+    return amplitude.track(eventName, {
       page_name: getPageName(),
       release_version: import.meta.env.VITE_APP_VERSION,
       ...properties,
@@ -112,17 +112,74 @@ export const setUserPropertiesOnce = (properties) => {
 // 진입 경로 저장
 export const initEntrySource = () => {
     const params = new URLSearchParams(window.location.search);
+    const utmSource = params.get('utm_source');
 
-    const entrySource =
-        params.get('utm_source') === 'reminder'
-            ? 'reminder'
-            : 'direct';
-
-    sessionStorage.setItem('entry_source', entrySource);
+    if (utmSource === 'reminder') {
+        sessionStorage.setItem('entry_source', 'reminder');
+    } else if (!sessionStorage.getItem('entry_source')) {
+        sessionStorage.setItem('entry_source', 'direct');
+    }
 };
 
 export const getEntrySource = () => {
     return sessionStorage.getItem('entry_source') || 'direct';
+};
+
+export const trackEmailSucceeded = (emailAttemptCount) => {
+    trackEvent('Email_Succeeded', {
+        email_attempt_count: emailAttemptCount
+    });
+};
+
+export const trackEmailFailed = (emailAttemptCount, failReason) => {
+    trackEvent('Email_Failed', {
+        email_attempt_count: emailAttemptCount,
+        fail_reason: failReason
+    });
+};
+
+export const trackEmailCreated = () => {
+    trackEvent('Email_Created');
+};
+
+export const trackAccountCreated = (signupAt) => {
+    trackEvent('Account_Created', {
+        signupAt: signupAt
+    });
+}
+
+// Login_Succeeded
+export const trackLoginSucceeded = (loginAttemptCount) => {
+    trackEvent('Login_Succeeded', {
+        login_attempt_count: loginAttemptCount
+    });
+};
+
+// Login_Failed
+export const trackLoginFailed = (loginAttemptCount, failReason) => {
+    trackEvent('Login_Failed', {
+        login_attempt_count: loginAttemptCount,
+        fail_reason: failReason
+    });
+};
+
+// PasswordReset_Succeeded
+export const trackPasswordResetSucceeded = (resetAttemptCount) => {
+    trackEvent('PasswordReset_Succeeded', {
+        reset_attempt_count: resetAttemptCount
+    });
+};
+
+// PasswordReset_Failed
+export const trackPasswordResetFailed = (resetAttemptCount, failReason) => {
+    trackEvent('PasswordReset_Failed', {
+        reset_attempt_count: resetAttemptCount,
+        fail_reason: failReason
+    });
+};
+
+export const trackAccountDeleted = () => {
+    trackEvent('Account_Deleted');
 };
 
 // Goal_Created 이벤트
@@ -261,7 +318,7 @@ export const trackTaskCompleted = (data) => {
         is_first_completion: data.isFirstCompletion,
         signup_day_count: data.signupDayCount,
         signup_minute_count: data.signupMinuteCount,
-        task_completed_date: data.completedAt.split('T')[0],
+        task_completed_date: data.completedAt?.split('T')[0] ?? null,
         entry_source: getEntrySource()
     });
 };
@@ -324,7 +381,7 @@ export const trackStudyExpelled = (data) => {
     trackEvent('Study_Expelled', {
         join_day_count: data.joinDayCount,
         member_count: data.memberCount,
-        expelled_user_id: data.userId,
+        expelled_user_id: formatUserId(data.userId),
         linked_study_id: formatStudyId(data.studyId)
     });
 };
@@ -342,13 +399,13 @@ export const trackStudyJoinModalCanceled = (data) => {
 export const trackStudyMemberModalViewed = (data) => {
     trackEvent('StudyMemberModal_Viewed', {
         linked_study_id: formatStudyId(data.studyId),
-        viewed_user_id: data.viewedUserId,
+        viewed_user_id: formatUserId(data.viewedUserId),
         is_self_viewed: data.isSelfViewed
     });
 };
 
 export const trackLogoutSucceeded = async () => {
-    await amplitude.track('Logout_Succeeded').promise;
+    await trackEvent('Logout_Succeeded').promise;
     amplitude.reset();
 };
 
@@ -372,37 +429,54 @@ export const trackPageScrolled = (scrollDepth) => {
     });
 };
 
+export const trackSignupPageViewed = () => {
+    trackEvent('SignupPage_Viewed');
+};
+
 export const trackGuestStarted = () => {
-    amplitude.track('Guest_Started');
+    trackEvent('Guest_Started');
 };
 
 export const trackGuestModalViewed = ({ feature }) => {
-    amplitude.track('GuestModal_Viewed', { feature });
+    trackEvent('GuestModal_Viewed', { feature });
 };
 
 export const trackGuestModalSignupClicked = ({ feature }) => {
-    amplitude.track('GuestModalSignup_Clicked', { feature });
+    trackEvent('GuestModalSignup_Clicked', { feature });
 };
 
 export const trackGuestModalCanceled = ({ feature }) => {
-    amplitude.track('GuestModal_Canceled', { feature });
+    trackEvent('GuestModal_Canceled', { feature });
 };
 
 export const trackGuestBannerClicked = ({ button }) => {
-    amplitude.track('GuestBanner_Clicked', { button });
+    trackEvent('GuestBanner_Clicked', { button });
 };
 
 export const trackGuestStudyListViewed = () => {
-    amplitude.track('GuestStudyList_Viewed');
+    trackEvent('GuestStudyList_Viewed');
 };
 
 export const trackGuestAction = ({ action, page_name }) => {
-    amplitude.track('Guest_Action', {
+    trackEvent('Guest_Action', {
         action,
         page_name
     });
 };
 
 export const trackOpenChatPopupViewed = () => {
-    amplitude.track('OpenChatPopup_Viewed');
+    trackEvent('OpenChatPopup_Viewed');
+};
+
+export const trackKakaoChatClicked = () => {
+    trackEvent('KakaoChat_Clicked');
+};
+
+export const saveUtmSource = () => {
+    const params = new URLSearchParams(window.location.search);
+    const utmSource = params.get('utm_source');
+
+    if (utmSource) {
+        sessionStorage.setItem('utm_source', utmSource);
+    }
 };

@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import './DemoBanner.css';
 import { trackGuestBannerClicked } from '../../amplitude';
-import { track } from '@amplitude/analytics-browser';
 
 function DemoBanner() {
     const navigate = useNavigate();
