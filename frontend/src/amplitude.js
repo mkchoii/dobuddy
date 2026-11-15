@@ -52,7 +52,7 @@ const GOAL_CATEGORY_MAP = {
 
 // SDK 초기화
 export const initAmplitude = async () => {
-    amplitude.init(import.meta.env.VITE_AMPLITUDE_API_KEY, {
+    await amplitude.init(import.meta.env.VITE_AMPLITUDE_API_KEY, {
         sessionTimeout: 10*60*1000,
         autocapture: {
           attribution: true,
@@ -67,7 +67,7 @@ export const initAmplitude = async () => {
 
 // 이벤트 전송
 export const trackEvent = (eventName, properties = {}) => {
-    amplitude.track(eventName, {
+    return amplitude.track(eventName, {
       page_name: getPageName(),
       release_version: import.meta.env.VITE_APP_VERSION,
       ...properties,
@@ -112,13 +112,13 @@ export const setUserPropertiesOnce = (properties) => {
 // 진입 경로 저장
 export const initEntrySource = () => {
     const params = new URLSearchParams(window.location.search);
+    const utmSource = params.get('utm_source');
 
-    const entrySource =
-        params.get('utm_source') === 'reminder'
-            ? 'reminder'
-            : 'direct';
-
-    sessionStorage.setItem('entry_source', entrySource);
+    if (utmSource === 'reminder') {
+        sessionStorage.setItem('entry_source', 'reminder');
+    } else if (!sessionStorage.getItem('entry_source')) {
+        sessionStorage.setItem('entry_source', 'direct');
+    }
 };
 
 export const getEntrySource = () => {
@@ -318,7 +318,7 @@ export const trackTaskCompleted = (data) => {
         is_first_completion: data.isFirstCompletion,
         signup_day_count: data.signupDayCount,
         signup_minute_count: data.signupMinuteCount,
-        task_completed_date: data.completedAt.split('T')[0],
+        task_completed_date: data.completedAt?.split('T')[0] ?? null,
         entry_source: getEntrySource()
     });
 };
@@ -381,7 +381,7 @@ export const trackStudyExpelled = (data) => {
     trackEvent('Study_Expelled', {
         join_day_count: data.joinDayCount,
         member_count: data.memberCount,
-        expelled_user_id: data.userId,
+        expelled_user_id: formatUserId(data.userId),
         linked_study_id: formatStudyId(data.studyId)
     });
 };
@@ -399,7 +399,7 @@ export const trackStudyJoinModalCanceled = (data) => {
 export const trackStudyMemberModalViewed = (data) => {
     trackEvent('StudyMemberModal_Viewed', {
         linked_study_id: formatStudyId(data.studyId),
-        viewed_user_id: data.viewedUserId,
+        viewed_user_id: formatUserId(data.viewedUserId),
         is_self_viewed: data.isSelfViewed
     });
 };
