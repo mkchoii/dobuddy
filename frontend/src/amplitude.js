@@ -51,7 +51,7 @@ const GOAL_CATEGORY_MAP = {
 };
 
 // SDK 초기화
-export const initAmplitude = () => {
+export const initAmplitude = async () => {
     amplitude.init(import.meta.env.VITE_AMPLITUDE_API_KEY, {
         sessionTimeout: 10*60*1000,
         autocapture: {
@@ -62,7 +62,7 @@ export const initAmplitude = () => {
           fileDownloads: false,
           formInteractions: false,
         }
-    });
+    }).promise;
 };
 
 // 이벤트 전송
