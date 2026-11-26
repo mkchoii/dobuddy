@@ -19,20 +19,15 @@ import PageTracker from './PageTracker';
 import DemoLayout from './components/layout/DemoLayout';
 
 function App() {
-    const params = new URLSearchParams(window.location.search);
-    const campaign = params.get('utm_campaign');
-    
     return (
         <BrowserRouter>
             <PageTracker />
             <Routes>
-                <Route path="/" element={campaign === 'testB' 
-                    ? <Navigate to={`/entry${window.location.search}`} replace />
-                    : <Navigate to={`/login${window.location.search}`} replace />
-                    }   
+                <Route
+                    path="/" element={<Navigate to={`/entry${window.location.search}`} replace />}
                 />
-                <Route path="/entry" element={<EntryPage />}/>
 
+                <Route path="/entry" element={<EntryPage />}/>
                 <Route path="/login" element={<LoginEmailPage />} />
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/signup/password" element={<PasswordSetupPage />} />
